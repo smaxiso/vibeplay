@@ -1,39 +1,50 @@
 import { useReducer, useRef, useEffect, useCallback, useState } from 'react'
 import { Vibe, Song } from '../types'
 import { createPlayerReducer, initialPlayerState } from './playerReducer'
-import { loadYouTubeAPI } from '../utils/youtube'
-
-interface VideoData {
-  title: string
-  author: string
-  video_id: string
-}
+import { loadYouTubeAPI, fetchPlaylistItems } from '../utils/youtube'
 
 export function useVibePlayer(vibe: Vibe) {
-  const isPlaylistMode = !!vibe.playlistId
-  const reducer = useCallback(createPlayerReducer(isPlaylistMode ? 999 : vibe.songs.length), [vibe.songs.length, isPlaylistMode])
+  const [songs, setSongs] = useState<Song[]>(vibe.songs)
+  const [isLoading, setIsLoading] = useState(!!vibe.playlistId)
+  const [apiError, setApiError] = useState(false)
+
+  const totalTracks = songs.length || 1
+  const reducer = useCallback(createPlayerReducer(totalTracks), [totalTracks])
   const [state, dispatch] = useReducer(reducer, initialPlayerState)
   const playerRef = useRef<YT.Player | null>(null)
   const intervalRef = useRef<number | null>(null)
-  const [apiError, setApiError] = useState(false)
-  const [currentVideoData, setCurrentVideoData] = useState<VideoData | null>(null)
-  const [playlistTracks, setPlaylistTracks] = useState<Song[]>([])
-  const isFirstLoad = useRef(true)
+  const playerReady = useRef(false)
 
-  // Get effective songs list (from JSON or from playlist)
-  const songs = isPlaylistMode ? playlistTracks : vibe.songs
-
-  // Load YouTube API and create player
+  // Fetch playlist tracks from YouTube Data API (if playlistId)
   useEffect(() => {
+    if (!vibe.playlistId) return
+
+    fetchPlaylistItems(vibe.playlistId)
+      .then(items => {
+        if (items.length > 0) {
+          setSongs(items)
+        }
+        setIsLoading(false)
+      })
+      .catch(() => {
+        setIsLoading(false)
+      })
+  }, [vibe.playlistId])
+
+  // Load YouTube IFrame API and create player
+  useEffect(() => {
+    if (songs.length === 0) return
+
     let destroyed = false
 
     loadYouTubeAPI()
       .then(() => {
         if (destroyed) return
 
-        const playerOptions: YT.PlayerOptions = {
+        const player = new YT.Player('yt-player', {
           height: '0',
           width: '0',
+          videoId: songs[0].youtubeId,
           playerVars: {
             autoplay: 0,
             controls: 0,
@@ -43,124 +54,38 @@ export function useVibePlayer(vibe: Vibe) {
             rel: 0,
           },
           events: {
-            onReady: (event) => {
-              playerRef.current = event.target as unknown as YT.Player
-              const p = playerRef.current
-              p.setVolume(initialPlayerState.volume)
-              isFirstLoad.current = false
-
-              // If playlist mode, cue the playlist (loads metadata without playing)
-              if (isPlaylistMode && vibe.playlistId) {
-                (p as any).cuePlaylist({
-                  list: vibe.playlistId,
-                  listType: 'playlist',
-                  index: 0,
-                })
-                // Give it a moment then grab video data
-                setTimeout(() => {
-                  updateVideoData()
-                }, 1500)
-              }
-
-              updateVideoData()
+            onReady: () => {
+              playerRef.current = player
+              player.setVolume(initialPlayerState.volume)
+              playerReady.current = true
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
-                if (isPlaylistMode) {
-                  // In playlist mode, YT handles advancement — we just track it
-                  setTimeout(updateVideoData, 500)
-                } else {
-                  dispatch({ type: 'TRACK_ENDED' })
-                }
-              }
-              if (event.data === YT.PlayerState.PLAYING) {
-                dispatch({ type: 'PLAY' })
-                updateVideoData()
-              }
-              if (event.data === YT.PlayerState.PAUSED) {
-                // Only sync pause if user triggered it (not during load)
-                if (!isFirstLoad.current) {
-                  dispatch({ type: 'PAUSE' })
-                }
+                dispatch({ type: 'TRACK_ENDED' })
               }
             },
             onError: () => {
-              if (isPlaylistMode) {
-                (playerRef.current as any)?.nextVideo?.()
-              } else {
-                dispatch({ type: 'NEXT' })
-              }
+              // Skip to next on error (video unavailable/region blocked)
+              dispatch({ type: 'NEXT' })
             },
           },
-        }
-
-        // For non-playlist mode, set initial videoId
-        if (!isPlaylistMode) {
-          playerOptions.videoId = vibe.songs[0].youtubeId
-        }
-
-        new YT.Player('yt-player', playerOptions)
+        })
       })
-      .catch(() => {
-        setApiError(true)
-      })
+      .catch(() => setApiError(true))
 
     return () => {
       destroyed = true
       playerRef.current?.destroy()
       playerRef.current = null
+      playerReady.current = false
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [songs.length > 0 ? songs[0].youtubeId : '']) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Update video data from YouTube player
-  const updateVideoData = useCallback(() => {
+  // Play / Pause sync
+  useEffect(() => {
+    if (!playerReady.current) return
     const p = playerRef.current
     if (!p) return
-    try {
-      const data = (p as any).getVideoData?.()
-      if (data && data.video_id) {
-        setCurrentVideoData(data)
-
-        // In playlist mode, update track index and build track list
-        if (isPlaylistMode) {
-          const playlistIndex = (p as any).getPlaylistIndex?.() ?? 0
-          dispatch({ type: 'SELECT_TRACK', payload: playlistIndex })
-
-          // Build playlist tracks from video IDs (once)
-          const videoIds: string[] = (p as any).getPlaylist?.() || []
-          if (videoIds.length > 0 && playlistTracks.length === 0) {
-            const tracks: Song[] = videoIds.map((id: string) => ({
-              title: '',
-              artist: '',
-              youtubeId: id,
-              duration: '',
-            }))
-            setPlaylistTracks(tracks)
-          }
-
-          // Update the current track's title/artist from video data
-          if (playlistTracks.length > 0 && data.title) {
-            setPlaylistTracks(prev => {
-              const updated = [...prev]
-              if (updated[playlistIndex]) {
-                updated[playlistIndex] = {
-                  ...updated[playlistIndex],
-                  title: data.title || updated[playlistIndex].title,
-                  artist: data.author || updated[playlistIndex].artist,
-                }
-              }
-              return updated
-            })
-          }
-        }
-      }
-    } catch (_) { /* not available yet */ }
-  }, [isPlaylistMode, playlistTracks.length])
-
-  // Sync play/pause to player (non-playlist mode)
-  useEffect(() => {
-    const p = playerRef.current
-    if (!p || isFirstLoad.current) return
     if (state.isPlaying) {
       p.playVideo()
     } else {
@@ -168,23 +93,27 @@ export function useVibePlayer(vibe: Vibe) {
     }
   }, [state.isPlaying])
 
-  // Load new track when trackIndex changes (non-playlist mode only)
+  // Track change — load new video
   useEffect(() => {
-    if (isPlaylistMode) return
+    if (!playerReady.current) return
     const p = playerRef.current
-    if (!p || isFirstLoad.current) return
-    const song = vibe.songs[state.trackIndex]
+    if (!p) return
+    const song = songs[state.trackIndex]
     if (song) {
       p.loadVideoById(song.youtubeId)
+      // loadVideoById auto-plays, so ensure state reflects that
+      if (!state.isPlaying) {
+        dispatch({ type: 'PLAY' })
+      }
     }
-  }, [state.trackIndex, isPlaylistMode]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.trackIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Volume sync
   useEffect(() => {
     playerRef.current?.setVolume(state.volume)
   }, [state.volume])
 
-  // 1Hz polling for time update
+  // 1Hz time polling
   useEffect(() => {
     if (state.isPlaying) {
       intervalRef.current = window.setInterval(() => {
@@ -199,74 +128,32 @@ export function useVibePlayer(vibe: Vibe) {
           })
         }
       }, 1000)
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
   }, [state.isPlaying])
 
-  // Seek handler
+  // Seek — direct call
   const seekTo = useCallback((seconds: number) => {
-    const p = playerRef.current
-    if (p) p.seekTo(seconds, true)
+    playerRef.current?.seekTo(seconds, true)
     dispatch({ type: 'SEEK', payload: seconds })
   }, [])
 
-  // Next/Prev for playlist mode
-  const next = useCallback(() => {
-    if (isPlaylistMode) {
-      (playerRef.current as any)?.nextVideo?.()
-      setTimeout(updateVideoData, 800)
-    } else {
-      dispatch({ type: 'NEXT' })
-    }
-  }, [isPlaylistMode, updateVideoData])
+  // Next / Prev / Shuffle — simple dispatches (no playlist API needed)
+  const next = useCallback(() => dispatch({ type: 'NEXT' }), [])
+  const prev = useCallback(() => dispatch({ type: 'PREV' }), [])
+  const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE' }), [])
 
-  const prev = useCallback(() => {
-    if (isPlaylistMode) {
-      (playerRef.current as any)?.previousVideo?.()
-      setTimeout(updateVideoData, 800)
-    } else {
-      dispatch({ type: 'PREV' })
-    }
-  }, [isPlaylistMode, updateVideoData])
-
-  const shuffle = useCallback(() => {
-    if (isPlaylistMode) {
-      const p = playerRef.current as any
-      if (state.shuffle) {
-        p?.setShuffle?.(false)
-      } else {
-        p?.setShuffle?.(true)
-      }
-    }
-    dispatch({ type: 'TOGGLE_SHUFFLE' })
-  }, [isPlaylistMode, state.shuffle])
-
-  // Get current song info — from YouTube data or JSON
+  // Current song
   const getCurrentSong = useCallback((): Song => {
-    if (isPlaylistMode && currentVideoData) {
-      return {
-        title: currentVideoData.title || 'Loading...',
-        artist: currentVideoData.author || '',
-        youtubeId: currentVideoData.video_id || '',
-        duration: '',
-      }
-    }
-    const jsonSong = vibe.songs[state.trackIndex]
-    if (!jsonSong) return { title: 'Loading...', artist: '', youtubeId: '', duration: '' }
-    if (currentVideoData && currentVideoData.video_id === jsonSong.youtubeId) {
-      return {
-        ...jsonSong,
-        title: jsonSong.title || currentVideoData.title,
-        artist: jsonSong.artist || currentVideoData.author,
-      }
-    }
-    return jsonSong
-  }, [state.trackIndex, currentVideoData, vibe.songs, isPlaylistMode])
+    return songs[state.trackIndex] || { title: 'Loading...', artist: '', youtubeId: '', duration: '' }
+  }, [state.trackIndex, songs])
 
-  return { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, getCurrentSong, songs, isPlaylistMode }
+  return { state, dispatch, seekTo, next, prev, shuffle: toggleShuffle, playerRef, apiError, isLoading, getCurrentSong, songs }
 }

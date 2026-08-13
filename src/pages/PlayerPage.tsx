@@ -23,9 +23,24 @@ export default function PlayerPage() {
 }
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
-  const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, getCurrentSong, songs } = useVibePlayer(vibe)
+  const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
   const currentSong = getCurrentSong()
   const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
+
+  if (isLoading) {
+    return (
+      <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
+        <picture>
+          {vibe.bgImageMobile && <source media="(max-width: 768px)" srcSet={vibe.bgImageMobile} />}
+          <img src={vibe.bgImage} alt="" className="player-page__bg" />
+        </picture>
+        <div className="player-page__title-area">
+          <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
+          <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '1rem' }}>Loading playlist...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
