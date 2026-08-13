@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "chhath-puja-classic",
+    "name": "Chhath Puja Classic",
+    "nameHindi": "जय छठी मैया",
+    "bgImage": "/images/chhath-bg.webp",
+    "color": "#E67E22",
+    "songs": [
+      { "title": "कांच ही बांस के बहंगिया", "artist": "Sharda Sinha", "youtubeId": "Kh_JqFMOHFU", "duration": "5:39" },
+      { "title": "केलवा के पात पर", "artist": "Sharda Sinha", "youtubeId": "T3WrM4XNUOQ", "duration": "6:12" },
+      { "title": "हे छठी मैया", "artist": "Anuradha Paudwal", "youtubeId": "J5KgZ5z5yDw", "duration": "5:45" },
+      { "title": "उगी हे सूरज देव", "artist": "Sharda Sinha", "youtubeId": "9bZkp7q19f0", "duration": "4:30" },
+      { "title": "पटना के घाट पर", "artist": "Pawan Singh", "youtubeId": "dQw4w9WgXcQ", "duration": "4:15" }
+    ]
+  },
+  {
+    "slug": "honey-singh-bluetooth",
+    "name": "Bluetooth Era",
+    "nameHindi": "ब्लूटूथ एरा 📱",
+    "bgImage": "/images/bluetooth-bg.webp",
+    "color": "#3498DB",
+    "songs": [
+      { "title": "Brown Rang", "artist": "Yo Yo Honey Singh", "youtubeId": "iOGXfMbMHJQ", "duration": "4:47" },
+      { "title": "Angreji Beat", "artist": "Gippy Grewal ft Honey Singh", "youtubeId": "vCadcBR95oU", "duration": "3:52" },
+      { "title": "Dope Shope", "artist": "Honey Singh ft Deep Money", "youtubeId": "NrXdauEv2tY", "duration": "4:11" },
+      { "title": "Blue Eyes", "artist": "Yo Yo Honey Singh", "youtubeId": "AoVPIH0jcXA", "duration": "4:03" },
+      { "title": "Lungi Dance", "artist": "Honey Singh", "youtubeId": "M5FGuBatbTg", "duration": "3:58" },
+      { "title": "Party All Night", "artist": "Honey Singh", "youtubeId": "wBFxhcLMi5g", "duration": "4:22" },
+      { "title": "Chaar Botal Vodka", "artist": "Honey Singh", "youtubeId": "SxTYjptEzZs", "duration": "3:36" },
+      { "title": "High Heels", "artist": "Honey Singh ft Jaz Dhami", "youtubeId": "Pyb3Bfq7FDg", "duration": "3:44" }
+    ]
+  },
+  {
+    "slug": "kumar-sanu-90s",
+    "name": "Kumar Sanu 90s",
+    "nameHindi": "कुमार सानू 90s",
+    "bgImage": "/images/kumarsanu-bg.webp",
+    "color": "#8E44AD",
+    "songs": [
+      { "title": "Ek Ladki Ko Dekha", "artist": "Kumar Sanu", "youtubeId": "IHqnFCGOLBc", "duration": "5:23" },
+      { "title": "Dheere Dheere Se", "artist": "Kumar Sanu", "youtubeId": "U0gREo2mGnA", "duration": "5:48" },
+      { "title": "Tujhe Dekha Toh", "artist": "Kumar Sanu & Lata", "youtubeId": "nlDFhRVYz5o", "duration": "5:15" },
+      { "title": "Jaadu Teri Nazar", "artist": "Kumar Sanu", "youtubeId": "kAkCkyPrxEQ", "duration": "4:58" },
+      { "title": "Mera Dil Bhi Kitna Pagal Hai", "artist": "Kumar Sanu", "youtubeId": "Lx-RAjqAzKU", "duration": "5:32" },
+      { "title": "Aankhon Mein Teri", "artist": "Kumar Sanu", "youtubeId": "BHQ2r2De39w", "duration": "5:10" }
+    ]
+  },
+  {
+    "slug": "desi-truck-wala",
+    "name": "Desi Truck Wala",
+    "nameHindi": "देसी ट्रक वाला 🚛",
+    "bgImage": "/images/truck-bg.webp",
+    "color": "#E74C3C",
+    "songs": [
+      { "title": "Gur Nalo Ishq Mitha", "artist": "Malkit Singh", "youtubeId": "DJztXj2GPfk", "duration": "4:45" },
+      { "title": "Mundian To Bach Ke", "artist": "Panjabi MC", "youtubeId": "DJztXj2GPfk", "duration": "3:38" },
+      { "title": "Jugni", "artist": "Arif Lohar", "youtubeId": "DJztXj2GPfk", "duration": "5:12" },
+      { "title": "Laung Da Lashkara", "artist": "Mahalakshmi Iyer", "youtubeId": "DJztXj2GPfk", "duration": "4:25" },
+      { "title": "London Thumakda", "artist": "Labh Janjua", "youtubeId": "DJztXj2GPfk", "duration": "3:55" }
+    ]
+  }
+]
