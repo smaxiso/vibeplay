@@ -30,29 +30,35 @@ export default function PlayerBar({
   if (!currentSong) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
-  // YouTube thumbnail with fallback to colored initial
-  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`
+  // YouTube thumbnail — only show if we have a valid ID
+  const thumbUrl = currentSong.youtubeId
+    ? `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`
+    : ''
+
+  const isLoading = !currentSong.youtubeId || currentSong.title === 'Loading...'
 
   return (
     <div className="player-bar">
       {/* Row 1: Thumbnail + Song info + Main controls */}
       <div className="player-bar__row">
         <div className="player-bar__thumb-wrap">
-          <img
-            src={thumbUrl}
-            alt={currentSong.title}
-            className="player-bar__thumb"
-            width={48}
-            height={48}
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-          />
+          {thumbUrl ? (
+            <img
+              src={thumbUrl}
+              alt={currentSong.title}
+              className="player-bar__thumb"
+              width={48}
+              height={48}
+              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+            />
+          ) : null}
           <div className="player-bar__thumb-fallback">
-            {currentSong.title.charAt(0)}
+            {isLoading ? '...' : currentSong.title.charAt(0)}
           </div>
         </div>
         <div className="player-bar__info">
-          <span className="player-bar__title">{currentSong.title}</span>
-          <span className="player-bar__artist">{currentSong.artist}</span>
+          <span className="player-bar__title">{isLoading ? 'Tap play to start' : currentSong.title}</span>
+          <span className="player-bar__artist">{isLoading ? '' : currentSong.artist}</span>
         </div>
         <div className="player-bar__main-controls">
           <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">

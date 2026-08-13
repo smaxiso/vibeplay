@@ -133,6 +133,21 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+/* Subtle glow behind the player bar so glass has something to blur */
+.player-page::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: radial-gradient(ellipse at center bottom, var(--accent) 0%, transparent 70%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 50;
 }
 
 .player-page__bg {
@@ -153,27 +168,34 @@ body {
 .player-page__back {
   color: var(--text);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.2s;
+}
+
+.player-page__back:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .player-page__source-link {
   color: var(--text-muted);
   padding: 0.5rem;
-  border-radius: 8px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   align-items: center;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s;
 }
 
-.player-page__source-link:hover { color: #ff0000; }
+.player-page__source-link:hover { color: #ff0000; background: rgba(255, 255, 255, 0.15); }
 
 .player-page__title-area {
   position: relative; z-index: 5;
@@ -218,15 +240,14 @@ body {
   z-index: 100;
   width: min(92%, 520px);
   padding: 1rem 1.5rem;
-  background: rgba(120, 90, 70, 0.25);
-  backdrop-filter: blur(30px) saturate(1.6);
-  -webkit-backdrop-filter: blur(30px) saturate(1.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px) saturate(1.8);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 28px;
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .player-bar__row {
