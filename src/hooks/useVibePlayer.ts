@@ -49,15 +49,17 @@ export function useVibePlayer(vibe: Vibe) {
               p.setVolume(initialPlayerState.volume)
               isFirstLoad.current = false
 
-              // If playlist mode, load the playlist
+              // If playlist mode, cue the playlist (loads metadata without playing)
               if (isPlaylistMode && vibe.playlistId) {
-                (p as any).loadPlaylist({
+                (p as any).cuePlaylist({
                   list: vibe.playlistId,
                   listType: 'playlist',
                   index: 0,
                 })
-                // Pause immediately — we don't want autoplay
-                setTimeout(() => p.pauseVideo(), 500)
+                // Give it a moment then grab video data
+                setTimeout(() => {
+                  updateVideoData()
+                }, 1500)
               }
 
               updateVideoData()

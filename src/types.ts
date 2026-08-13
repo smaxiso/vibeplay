@@ -10,6 +10,7 @@ export interface Vibe {
   name: string
   nameHindi: string
   bgImage: string
+  bgImageMobile?: string
   color: string
   songs: Song[]
   playlistId?: string   // YouTube playlist ID (e.g., PLxxxxxxx) — future: auto-fetch songs from this

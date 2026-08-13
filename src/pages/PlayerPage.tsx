@@ -29,13 +29,18 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
-      {/* Full bleed background */}
-      <img
-        src={vibe.bgImage}
-        alt=""
-        className="player-page__bg"
-        onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
-      />
+      {/* Full bleed background — responsive */}
+      <picture>
+        {vibe.bgImageMobile && (
+          <source media="(max-width: 768px)" srcSet={vibe.bgImageMobile} />
+        )}
+        <img
+          src={vibe.bgImage}
+          alt=""
+          className="player-page__bg"
+          onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
+        />
+      </picture>
 
       {/* Top bar */}
       <div className="player-page__topbar">
