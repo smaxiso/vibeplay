@@ -23,9 +23,9 @@ export default function PlayerPage() {
 }
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
-  const { state, dispatch, seekTo, apiError, getCurrentSong } = useVibePlayer(vibe)
+  const { state, dispatch, seekTo, next, prev, shuffle, apiError, getCurrentSong, songs } = useVibePlayer(vibe)
   const currentSong = getCurrentSong()
-  const youtubeUrl = currentSong ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
+  const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
 
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
@@ -80,11 +80,11 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           volume={state.volume}
           onPlay={() => dispatch({ type: 'PLAY' })}
           onPause={() => dispatch({ type: 'PAUSE' })}
-          onNext={() => dispatch({ type: 'NEXT' })}
-          onPrev={() => dispatch({ type: 'PREV' })}
+          onNext={next}
+          onPrev={prev}
           onSeek={seekTo}
           onVolumeChange={(v) => dispatch({ type: 'SET_VOLUME', payload: v })}
-          onShuffleToggle={() => dispatch({ type: 'TOGGLE_SHUFFLE' })}
+          onShuffleToggle={shuffle}
           onRepeatToggle={() => dispatch({ type: 'TOGGLE_REPEAT' })}
           onPlaylistToggle={() => dispatch({ type: 'TOGGLE_DRAWER' })}
         />
@@ -92,10 +92,15 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Playlist drawer */}
       <PlaylistDrawer
-        songs={vibe.songs}
+        songs={songs}
         currentIndex={state.trackIndex}
         isOpen={state.isDrawerOpen}
-        onSelect={(i) => dispatch({ type: 'SELECT_TRACK', payload: i })}
+        onSelect={(i) => {
+          if (vibe.playlistId) {
+            (document.querySelector('#yt-player') as any)?.contentWindow?.postMessage?.(JSON.stringify({ event: 'command', func: 'playVideoAt', args: [i] }), '*')
+          }
+          dispatch({ type: 'SELECT_TRACK', payload: i })
+        }}
         onClose={() => dispatch({ type: 'TOGGLE_DRAWER' })}
       />
     </div>
