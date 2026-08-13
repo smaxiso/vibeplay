@@ -12,11 +12,16 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
   return (
     <div className={`playlist-drawer ${isOpen ? 'open' : ''}`}>
       <div className="playlist-drawer__header">
-        <h3>Playlist ({songs.length} songs)</h3>
+        <h3>Playlist{songs.length > 0 ? ` (${songs.length} songs)` : ''}</h3>
         <button onClick={onClose} className="playlist-drawer__close" aria-label="Close playlist">✕</button>
       </div>
-      <ul className="playlist-drawer__list">
-        {songs.map((song, index) => (
+      {songs.length === 0 ? (
+        <div className="playlist-drawer__empty">
+          <p>Playing from YouTube playlist — tracks load automatically.</p>
+        </div>
+      ) : (
+        <ul className="playlist-drawer__list">
+          {songs.map((song, index) => (
           <li
             key={`${song.youtubeId}-${index}`}
             className={`playlist-drawer__item ${index === currentIndex ? 'active' : ''}`}
@@ -34,7 +39,8 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
             <span className="playlist-drawer__duration">{song.duration}</span>
           </li>
         ))}
-      </ul>
+        </ul>
+      )}
     </div>
   )
 }

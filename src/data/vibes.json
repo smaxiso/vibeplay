@@ -16,7 +16,7 @@
   {
     "slug": "honey-singh-bluetooth",
     "name": "Bluetooth Era",
-    "nameHindi": "ब्लूटूथ एरा 📱",
+    "nameHindi": "ब्लूटूथ एरा",
     "bgImage": "/images/bluetooth-bg.webp",
     "color": "#3498DB",
     "playlistId": "PLeyhzp0L1Aw0",
@@ -41,7 +41,7 @@
   {
     "slug": "desi-truck-wala",
     "name": "Desi Truck Wala",
-    "nameHindi": "देसी ट्रक वाला 🚛",
+    "nameHindi": "देसी ट्रक वाला",
     "bgImage": "/images/truck-bg.webp",
     "color": "#E74C3C",
     "songs": [

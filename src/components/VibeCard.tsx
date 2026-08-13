@@ -7,9 +7,10 @@ interface VibeCardProps {
   bgImage: string
   color: string
   songCount: number
+  isPlaylist?: boolean
 }
 
-export default function VibeCard({ slug, nameHindi, bgImage, color, songCount }: VibeCardProps) {
+export default function VibeCard({ slug, nameHindi, bgImage, color, songCount, isPlaylist }: VibeCardProps) {
   return (
     <Link to={`/vibe/${slug}`} className="vibe-card" style={{ '--accent': color } as React.CSSProperties}>
       <img
@@ -23,7 +24,9 @@ export default function VibeCard({ slug, nameHindi, bgImage, color, songCount }:
       />
       <div className="vibe-card__overlay">
         <h2 className="vibe-card__title">{nameHindi}</h2>
-        <span className="vibe-card__count">{songCount} songs</span>
+        <span className="vibe-card__count">
+          {isPlaylist ? 'YouTube Playlist' : `${songCount} songs`}
+        </span>
       </div>
     </Link>
   )
