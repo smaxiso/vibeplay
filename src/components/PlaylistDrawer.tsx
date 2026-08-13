@@ -17,7 +17,7 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
       </div>
       {songs.length === 0 ? (
         <div className="playlist-drawer__empty">
-          <p>Playing from YouTube playlist — tracks load automatically.</p>
+          <p>Loading playlist tracks...</p>
         </div>
       ) : (
         <ul className="playlist-drawer__list">
@@ -33,8 +33,8 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
           >
             <span className="playlist-drawer__num">{index === currentIndex ? '▶' : index + 1}</span>
             <div className="playlist-drawer__meta">
-              <span className="playlist-drawer__song-title">{song.title}</span>
-              <span className="playlist-drawer__artist">{song.artist}</span>
+              <span className="playlist-drawer__song-title">{song.title || `Track ${index + 1}`}</span>
+              <span className="playlist-drawer__artist">{song.artist || song.youtubeId?.slice(0, 6)}</span>
             </div>
             <span className="playlist-drawer__duration">{song.duration}</span>
           </li>

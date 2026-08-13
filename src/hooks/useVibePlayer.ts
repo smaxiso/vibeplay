@@ -17,7 +17,7 @@ export function useVibePlayer(vibe: Vibe) {
   const intervalRef = useRef<number | null>(null)
   const [apiError, setApiError] = useState(false)
   const [currentVideoData, setCurrentVideoData] = useState<VideoData | null>(null)
-  const [playlistTracks] = useState<Song[]>([])
+  const [playlistTracks, setPlaylistTracks] = useState<Song[]>([])
   const isFirstLoad = useRef(true)
 
   // Get effective songs list (from JSON or from playlist)
@@ -119,14 +119,41 @@ export function useVibePlayer(vibe: Vibe) {
       if (data && data.video_id) {
         setCurrentVideoData(data)
 
-        // In playlist mode, build track info from YouTube data
+        // In playlist mode, update track index and build track list
         if (isPlaylistMode) {
           const playlistIndex = (p as any).getPlaylistIndex?.() ?? 0
           dispatch({ type: 'SELECT_TRACK', payload: playlistIndex })
+
+          // Build playlist tracks from video IDs (once)
+          const videoIds: string[] = (p as any).getPlaylist?.() || []
+          if (videoIds.length > 0 && playlistTracks.length === 0) {
+            const tracks: Song[] = videoIds.map((id: string) => ({
+              title: '',
+              artist: '',
+              youtubeId: id,
+              duration: '',
+            }))
+            setPlaylistTracks(tracks)
+          }
+
+          // Update the current track's title/artist from video data
+          if (playlistTracks.length > 0 && data.title) {
+            setPlaylistTracks(prev => {
+              const updated = [...prev]
+              if (updated[playlistIndex]) {
+                updated[playlistIndex] = {
+                  ...updated[playlistIndex],
+                  title: data.title || updated[playlistIndex].title,
+                  artist: data.author || updated[playlistIndex].artist,
+                }
+              }
+              return updated
+            })
+          }
         }
       }
     } catch (_) { /* not available yet */ }
-  }, [isPlaylistMode])
+  }, [isPlaylistMode, playlistTracks.length])
 
   // Sync play/pause to player (non-playlist mode)
   useEffect(() => {

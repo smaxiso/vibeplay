@@ -23,7 +23,7 @@ export default function PlayerPage() {
 }
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
-  const { state, dispatch, seekTo, next, prev, shuffle, apiError, getCurrentSong, songs } = useVibePlayer(vibe)
+  const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, getCurrentSong, songs } = useVibePlayer(vibe)
   const currentSong = getCurrentSong()
   const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
 
@@ -97,9 +97,15 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
         isOpen={state.isDrawerOpen}
         onSelect={(i) => {
           if (vibe.playlistId) {
-            (document.querySelector('#yt-player') as any)?.contentWindow?.postMessage?.(JSON.stringify({ event: 'command', func: 'playVideoAt', args: [i] }), '*')
+            const p = playerRef.current as any
+            p?.playVideoAt?.(i)
+            setTimeout(() => {
+              const data = p?.getVideoData?.()
+              if (data) dispatch({ type: 'SELECT_TRACK', payload: i })
+            }, 500)
+          } else {
+            dispatch({ type: 'SELECT_TRACK', payload: i })
           }
-          dispatch({ type: 'SELECT_TRACK', payload: i })
         }}
         onClose={() => dispatch({ type: 'TOGGLE_DRAWER' })}
       />
