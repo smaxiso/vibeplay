@@ -29,12 +29,24 @@ body {
 
 /* ─── Index Page ─── */
 .index-page {
+  position: relative;
   min-height: 100vh;
   padding: 2rem 1rem;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  overflow: hidden;
+}
+
+.index-page__bg {
+  position: fixed; inset: 0;
+  z-index: 0;
+}
+
+.index-page__bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
 }
 
 .index-header {
+  position: relative; z-index: 1;
   text-align: center;
   margin-bottom: 2.5rem;
 }
@@ -66,6 +78,7 @@ body {
 }
 
 .vibe-grid {
+  position: relative; z-index: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -518,6 +531,7 @@ body {
 
 /* ─── Footer ─── */
 .index-footer {
+  position: relative; z-index: 1;
   text-align: center;
   padding: 2rem;
   color: var(--text-muted);

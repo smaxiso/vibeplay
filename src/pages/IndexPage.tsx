@@ -5,6 +5,10 @@ import { Vibe } from '../types'
 export default function IndexPage() {
   return (
     <div className="index-page">
+      <picture className="index-page__bg">
+        <source media="(max-width: 768px)" srcSet="/images/index-bg-mobile.png" />
+        <img src="/images/index-bg-desktop.png" alt="" />
+      </picture>
       <header className="index-header">
         <div className="index-header__glass">
           <h1 className="index-header__title">VibePlay</h1>
