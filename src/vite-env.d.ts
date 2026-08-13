@@ -9,6 +9,7 @@ declare namespace YT {
     seekTo(seconds: number, allowSeekAhead?: boolean): void
     setVolume(volume: number): void
     loadVideoById(videoId: string): void
+    cueVideoById(videoId: string): void
     getCurrentTime(): number
     getDuration(): number
     destroy(): void

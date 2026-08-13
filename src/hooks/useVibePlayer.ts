@@ -7,6 +7,7 @@ export function useVibePlayer(vibe: Vibe) {
   const [songs, setSongs] = useState<Song[]>(vibe.songs)
   const [isLoading, setIsLoading] = useState(!!vibe.playlistId)
   const [apiError, setApiError] = useState(false)
+  const [usePlaylistFallback, setUsePlaylistFallback] = useState(false)
 
   const totalTracks = songs.length || 1
   const reducer = useCallback(createPlayerReducer(totalTracks), [totalTracks])
@@ -15,7 +16,7 @@ export function useVibePlayer(vibe: Vibe) {
   const intervalRef = useRef<number | null>(null)
   const playerReady = useRef(false)
 
-  // Fetch playlist tracks from YouTube Data API (if playlistId)
+  // Fetch playlist tracks — try Data API first, fallback to IFrame playlist
   useEffect(() => {
     if (!vibe.playlistId) return
 
@@ -27,13 +28,17 @@ export function useVibePlayer(vibe: Vibe) {
         setIsLoading(false)
       })
       .catch(() => {
+        // Data API failed (403 = not enabled) — fall back to IFrame playlist mode
+        console.warn('YouTube Data API unavailable, using IFrame playlist fallback')
         setIsLoading(false)
+        setUsePlaylistFallback(true)
       })
   }, [vibe.playlistId])
 
   // Load YouTube IFrame API and create player
   useEffect(() => {
-    if (songs.length === 0) return
+    // Wait until we have songs OR we're in playlist fallback mode
+    if (songs.length === 0 && !usePlaylistFallback) return
 
     let destroyed = false
 
@@ -41,10 +46,11 @@ export function useVibePlayer(vibe: Vibe) {
       .then(() => {
         if (destroyed) return
 
-        const player = new YT.Player('yt-player', {
+        const firstVideoId = songs.length > 0 ? songs[0].youtubeId : undefined
+
+        const playerConfig: YT.PlayerOptions = {
           height: '0',
           width: '0',
-          videoId: songs[0].youtubeId,
           playerVars: {
             autoplay: 0,
             controls: 0,
@@ -54,22 +60,79 @@ export function useVibePlayer(vibe: Vibe) {
             rel: 0,
           },
           events: {
-            onReady: () => {
-              playerRef.current = player
-              player.setVolume(initialPlayerState.volume)
+            onReady: (event) => {
+              playerRef.current = event.target as unknown as YT.Player
+              const p = playerRef.current
+              p.setVolume(initialPlayerState.volume)
               playerReady.current = true
+
+              // If fallback mode, cue the playlist to get video IDs
+              if (usePlaylistFallback && vibe.playlistId) {
+                (p as any).cuePlaylist({
+                  list: vibe.playlistId,
+                  listType: 'playlist',
+                  index: 0,
+                })
+                // After cueing, grab the playlist video IDs
+                setTimeout(() => {
+                  const videoIds: string[] = (p as any).getPlaylist?.() || []
+                  if (videoIds.length > 0) {
+                    const tracks = videoIds.map((id: string, i: number) => ({
+                      title: `Track ${i + 1}`,
+                      artist: '',
+                      youtubeId: id,
+                      duration: '',
+                    }))
+                    setSongs(tracks)
+                    // Now cue the first video individually for clean playback
+                    p.cueVideoById(videoIds[0])
+                  }
+                  // Get title of first track
+                  setTimeout(() => {
+                    const data = (p as any).getVideoData?.()
+                    if (data && data.title) {
+                      setSongs(prev => {
+                        const updated = [...prev]
+                        if (updated[0]) {
+                          updated[0] = { ...updated[0], title: data.title, artist: data.author || '' }
+                        }
+                        return updated
+                      })
+                    }
+                  }, 1500)
+                }, 2000)
+              }
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
                 dispatch({ type: 'TRACK_ENDED' })
               }
+              // When a track starts playing, update its title from video data
+              if (event.data === YT.PlayerState.PLAYING && usePlaylistFallback) {
+                const data = (playerRef.current as any)?.getVideoData?.()
+                if (data && data.title) {
+                  const idx = state.trackIndex
+                  setSongs(prev => {
+                    const updated = [...prev]
+                    if (updated[idx]) {
+                      updated[idx] = { ...updated[idx], title: data.title, artist: data.author || '' }
+                    }
+                    return updated
+                  })
+                }
+              }
             },
             onError: () => {
-              // Skip to next on error (video unavailable/region blocked)
               dispatch({ type: 'NEXT' })
             },
           },
-        })
+        }
+
+        if (firstVideoId) {
+          playerConfig.videoId = firstVideoId
+        }
+
+        new YT.Player('yt-player', playerConfig)
       })
       .catch(() => setApiError(true))
 
@@ -79,7 +142,7 @@ export function useVibePlayer(vibe: Vibe) {
       playerRef.current = null
       playerReady.current = false
     }
-  }, [songs.length > 0 ? songs[0].youtubeId : '']) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [songs.length > 0 || usePlaylistFallback ? 'ready' : 'waiting']) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Play / Pause sync
   useEffect(() => {
