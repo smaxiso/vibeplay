@@ -30,20 +30,26 @@ export default function PlayerBar({
   if (!currentSong) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
-  // YouTube thumbnail — mqdefault is most reliable (320x180)
-  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/mqdefault.jpg`
+  // YouTube thumbnail with fallback to colored initial
+  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`
 
   return (
     <div className="player-bar">
       {/* Row 1: Thumbnail + Song info + Main controls */}
       <div className="player-bar__row">
-        <img
-          src={thumbUrl}
-          alt={currentSong.title}
-          className="player-bar__thumb"
-          width={48}
-          height={48}
-        />
+        <div className="player-bar__thumb-wrap">
+          <img
+            src={thumbUrl}
+            alt={currentSong.title}
+            className="player-bar__thumb"
+            width={48}
+            height={48}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+          />
+          <div className="player-bar__thumb-fallback">
+            {currentSong.title.charAt(0)}
+          </div>
+        </div>
         <div className="player-bar__info">
           <span className="player-bar__title">{currentSong.title}</span>
           <span className="player-bar__artist">{currentSong.artist}</span>
