@@ -10,7 +10,7 @@ export default function PlayerPage() {
   const vibe = (vibes as Vibe[]).find(v => v.slug === slug)
 
   if (!vibe) return <Navigate to="/" replace />
-  if (vibe.songs.length === 0) {
+  if (!vibe.playlistId && vibe.songs.length === 0) {
     return (
       <div className="player-page player-page--empty">
         <p>No songs in this vibe</p>
