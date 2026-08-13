@@ -12,6 +12,8 @@ export interface Vibe {
   bgImage: string
   color: string
   songs: Song[]
+  playlistId?: string   // YouTube playlist ID (e.g., PLxxxxxxx) — future: auto-fetch songs from this
+  playlistUrl?: string  // Full YouTube playlist URL for "open source" link
 }
 
 export type RepeatMode = 'off' | 'all' | 'one'

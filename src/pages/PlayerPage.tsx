@@ -23,8 +23,8 @@ export default function PlayerPage() {
 }
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
-  const { state, dispatch, seekTo, apiError } = useVibePlayer(vibe)
-  const currentSong = vibe.songs[state.trackIndex]
+  const { state, dispatch, seekTo, apiError, getCurrentSong } = useVibePlayer(vibe)
+  const currentSong = getCurrentSong()
   const youtubeUrl = currentSong ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
 
   return (

@@ -1,7 +1,13 @@
 import { useReducer, useRef, useEffect, useCallback, useState } from 'react'
-import { Vibe } from '../types'
+import { Vibe, Song } from '../types'
 import { createPlayerReducer, initialPlayerState } from './playerReducer'
 import { loadYouTubeAPI } from '../utils/youtube'
+
+interface VideoData {
+  title: string
+  author: string
+  video_id: string
+}
 
 export function useVibePlayer(vibe: Vibe) {
   const totalTracks = vibe.songs.length
@@ -10,6 +16,8 @@ export function useVibePlayer(vibe: Vibe) {
   const playerRef = useRef<YT.Player | null>(null)
   const intervalRef = useRef<number | null>(null)
   const [apiError, setApiError] = useState(false)
+  const [currentVideoData, setCurrentVideoData] = useState<VideoData | null>(null)
+  const isFirstLoad = useRef(true)
 
   // Load YouTube API and create player
   useEffect(() => {
@@ -24,7 +32,7 @@ export function useVibePlayer(vibe: Vibe) {
           width: '0',
           videoId: vibe.songs[0].youtubeId,
           playerVars: {
-            autoplay: 1,
+            autoplay: 0, // Start paused — user clicks play
             controls: 0,
             disablekb: 1,
             fs: 0,
@@ -35,14 +43,25 @@ export function useVibePlayer(vibe: Vibe) {
             onReady: () => {
               playerRef.current = player
               player.setVolume(initialPlayerState.volume)
-              dispatch({ type: 'PLAY' })
+              // Don't autoplay — stay paused until user clicks
+              isFirstLoad.current = false
+              // Get video data from YouTube
+              try {
+                const data = (player as any).getVideoData?.()
+                if (data) setCurrentVideoData(data)
+              } catch (_) { /* not available yet */ }
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
                 dispatch({ type: 'TRACK_ENDED' })
               }
-              // ponytail: don't sync PLAYING/PAUSED from YT state — let our state be authoritative
-              // YT fires these during load/buffer which causes flicker
+              // Update video data when a new video starts
+              if (event.data === YT.PlayerState.PLAYING) {
+                try {
+                  const data = (playerRef.current as any)?.getVideoData?.()
+                  if (data) setCurrentVideoData(data)
+                } catch (_) {}
+              }
             },
             onError: () => {
               dispatch({ type: 'NEXT' })
@@ -64,7 +83,7 @@ export function useVibePlayer(vibe: Vibe) {
   // Sync play/pause to player
   useEffect(() => {
     const p = playerRef.current
-    if (!p) return
+    if (!p || isFirstLoad.current) return
     if (state.isPlaying) {
       p.playVideo()
     } else {
@@ -75,7 +94,7 @@ export function useVibePlayer(vibe: Vibe) {
   // Load new track when trackIndex changes
   useEffect(() => {
     const p = playerRef.current
-    if (!p) return
+    if (!p || isFirstLoad.current) return
     const song = vibe.songs[state.trackIndex]
     if (song) {
       p.loadVideoById(song.youtubeId)
@@ -87,7 +106,7 @@ export function useVibePlayer(vibe: Vibe) {
     playerRef.current?.setVolume(state.volume)
   }, [state.volume])
 
-  // 1Hz polling for time update (read-only — no seeking)
+  // 1Hz polling for time update (read-only)
   useEffect(() => {
     if (state.isPlaying) {
       intervalRef.current = window.setInterval(() => {
@@ -111,7 +130,7 @@ export function useVibePlayer(vibe: Vibe) {
     }
   }, [state.isPlaying])
 
-  // Seek handler — call this directly, NOT via useEffect on currentTime
+  // Seek handler — direct call, no useEffect loop
   const seekTo = useCallback((seconds: number) => {
     const p = playerRef.current
     if (p) {
@@ -120,5 +139,19 @@ export function useVibePlayer(vibe: Vibe) {
     dispatch({ type: 'SEEK', payload: seconds })
   }, [])
 
-  return { state, dispatch, seekTo, playerRef, apiError }
+  // Get enriched song info — prefer YouTube data if available, fall back to JSON
+  const getCurrentSong = useCallback((): Song => {
+    const jsonSong = vibe.songs[state.trackIndex]
+    if (currentVideoData && currentVideoData.video_id === jsonSong.youtubeId) {
+      return {
+        ...jsonSong,
+        // Use YouTube title/artist if JSON has placeholder data
+        title: jsonSong.title || currentVideoData.title,
+        artist: jsonSong.artist || currentVideoData.author,
+      }
+    }
+    return jsonSong
+  }, [state.trackIndex, currentVideoData, vibe.songs])
+
+  return { state, dispatch, seekTo, playerRef, apiError, getCurrentSong }
 }
