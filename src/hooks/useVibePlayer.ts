@@ -9,7 +9,6 @@ export function useVibePlayer(vibe: Vibe) {
   const [state, dispatch] = useReducer(reducer, initialPlayerState)
   const playerRef = useRef<YT.Player | null>(null)
   const intervalRef = useRef<number | null>(null)
-  const apiLoadedRef = useRef(false)
   const [apiError, setApiError] = useState(false)
 
   // Load YouTube API and create player
@@ -19,7 +18,6 @@ export function useVibePlayer(vibe: Vibe) {
     loadYouTubeAPI()
       .then(() => {
         if (destroyed) return
-        apiLoadedRef.current = true
 
         const player = new YT.Player('yt-player', {
           height: '0',
@@ -42,11 +40,9 @@ export function useVibePlayer(vibe: Vibe) {
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
                 dispatch({ type: 'TRACK_ENDED' })
-              } else if (event.data === YT.PlayerState.PLAYING) {
-                dispatch({ type: 'PLAY' })
-              } else if (event.data === YT.PlayerState.PAUSED) {
-                dispatch({ type: 'PAUSE' })
               }
+              // ponytail: don't sync PLAYING/PAUSED from YT state — let our state be authoritative
+              // YT fires these during load/buffer which causes flicker
             },
             onError: () => {
               dispatch({ type: 'NEXT' })
@@ -65,11 +61,10 @@ export function useVibePlayer(vibe: Vibe) {
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync player with state changes
+  // Sync play/pause to player
   useEffect(() => {
     const p = playerRef.current
     if (!p) return
-
     if (state.isPlaying) {
       p.playVideo()
     } else {
@@ -87,19 +82,12 @@ export function useVibePlayer(vibe: Vibe) {
     }
   }, [state.trackIndex]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Seek
-  useEffect(() => {
-    const p = playerRef.current
-    if (!p) return
-    p.seekTo(state.currentTime, true)
-  }, [state.currentTime]) // ponytail: intentional — only seek on user action, not on polling
-
-  // Volume
+  // Volume sync
   useEffect(() => {
     playerRef.current?.setVolume(state.volume)
   }, [state.volume])
 
-  // 1Hz polling for time update
+  // 1Hz polling for time update (read-only — no seeking)
   useEffect(() => {
     if (state.isPlaying) {
       intervalRef.current = window.setInterval(() => {
@@ -123,5 +111,14 @@ export function useVibePlayer(vibe: Vibe) {
     }
   }, [state.isPlaying])
 
-  return { state, dispatch, playerRef, apiError }
+  // Seek handler — call this directly, NOT via useEffect on currentTime
+  const seekTo = useCallback((seconds: number) => {
+    const p = playerRef.current
+    if (p) {
+      p.seekTo(seconds, true)
+    }
+    dispatch({ type: 'SEEK', payload: seconds })
+  }, [])
+
+  return { state, dispatch, seekTo, playerRef, apiError }
 }

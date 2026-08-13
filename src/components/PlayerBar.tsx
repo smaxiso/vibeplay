@@ -30,8 +30,8 @@ export default function PlayerBar({
   if (!currentSong) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
-  // YouTube thumbnail — hqdefault is 480x360, good enough for album art
-  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/hqdefault.jpg`
+  // YouTube thumbnail — mqdefault is most reliable (320x180)
+  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/mqdefault.jpg`
 
   return (
     <div className="player-bar">

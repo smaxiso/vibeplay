@@ -122,6 +122,9 @@ body {
 .player-page__topbar {
   position: relative; z-index: 10;
   padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .player-page__back {
@@ -134,6 +137,20 @@ body {
   backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
 }
+
+.player-page__source-link {
+  color: var(--text-muted);
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.player-page__source-link:hover { color: #ff0000; }
 
 .player-page__title-area {
   position: relative; z-index: 5;
