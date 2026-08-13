@@ -303,6 +303,13 @@ body {
 
 .player-bar__btn-sm.active { color: var(--accent); }
 
+.player-bar__vol-group {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-muted);
+}
+
 .player-bar__volume {
   width: 80px;
   -webkit-appearance: none;
