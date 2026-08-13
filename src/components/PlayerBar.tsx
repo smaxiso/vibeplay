@@ -29,18 +29,33 @@ export default function PlayerBar({
   if (!currentSong) return null
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0
+  const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/default.jpg`
 
   return (
     <div className="player-bar">
-      {/* Now playing info */}
-      <div className="player-bar__info">
-        <div className="player-bar__song">
+      {/* Row 1: Thumbnail + Song info + Main controls */}
+      <div className="player-bar__row">
+        <img
+          src={thumbUrl}
+          alt=""
+          className="player-bar__thumb"
+          width={48}
+          height={48}
+        />
+        <div className="player-bar__info">
           <span className="player-bar__title">{currentSong.title}</span>
           <span className="player-bar__artist">{currentSong.artist}</span>
         </div>
+        <div className="player-bar__main-controls">
+          <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">⏮</button>
+          <button onClick={isPlaying ? onPause : onPlay} className="player-bar__btn player-bar__btn--play" aria-label={isPlaying ? 'Pause' : 'Play'}>
+            {isPlaying ? '⏸' : '▶'}
+          </button>
+          <button onClick={onNext} className="player-bar__btn" aria-label="Next track">⏭</button>
+        </div>
       </div>
 
-      {/* Seek bar */}
+      {/* Row 2: Seek bar */}
       <div className="player-bar__seek">
         <span className="player-bar__time">{formatTime(currentTime)}</span>
         <input
@@ -56,16 +71,7 @@ export default function PlayerBar({
         <span className="player-bar__time">{formatTime(duration)}</span>
       </div>
 
-      {/* Main controls */}
-      <div className="player-bar__controls">
-        <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">⏮</button>
-        <button onClick={isPlaying ? onPause : onPlay} className="player-bar__btn player-bar__btn--play" aria-label={isPlaying ? 'Pause' : 'Play'}>
-          {isPlaying ? '⏸' : '▶'}
-        </button>
-        <button onClick={onNext} className="player-bar__btn" aria-label="Next track">⏭</button>
-      </div>
-
-      {/* Secondary controls */}
+      {/* Row 3: Secondary controls */}
       <div className="player-bar__secondary">
         <button onClick={onShuffleToggle} className={`player-bar__btn-sm ${shuffle ? 'active' : ''}`} aria-label="Shuffle">🔀</button>
         <button onClick={onRepeatToggle} className={`player-bar__btn-sm ${repeat !== 'off' ? 'active' : ''}`} aria-label={`Repeat: ${repeat}`}>
