@@ -224,15 +224,18 @@ export function useVibePlayer(vibe: Vibe) {
 
   // Track change — load new video
   useEffect(() => {
+    console.log('[Track Change Effect] fired. trackIndex:', state.trackIndex, 'playerReady:', playerReady.current)
     if (!playerReady.current) return
     const p = playerRef.current
     if (!p) return
     const song = songs[state.trackIndex]
+    console.log('[Track Change Effect] song found:', !!song)
     if (song) {
       if (fadeIntervalRef.current) {
         clearInterval(fadeIntervalRef.current)
         fadeIntervalRef.current = null
       }
+      console.log('[Track Change Effect] calling loadVideoById:', song.youtubeId)
       p.loadVideoById(song.youtubeId)
       p.setVolume(state.volume)
       // loadVideoById auto-plays, so ensure state reflects that
@@ -284,28 +287,34 @@ export function useVibePlayer(vibe: Vibe) {
     dispatch({ type: 'SEEK', payload: seconds })
   }, [])
 
-  const fadeAudio = useCallback((onComplete: () => void) => {
+  const fadeAudio = useCallback((callback: () => void) => {
     const p = playerRef.current
+    console.log('[fadeAudio] start', { p: !!p, isPlaying: state.isPlaying })
     if (!p || !state.isPlaying) {
-      onComplete()
+      console.log('[fadeAudio] skipping fade, invoking callback directly')
+      callback()
       return
     }
-    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
 
-    let currentVol = (p as any).getVolume()
-    const step = currentVol / 15
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current)
+    }
+
+    let currentVol = (p as any).getVolume() || state.volume
+    const step = currentVol / 10
+    console.log('[fadeAudio] starting interval, volume:', currentVol)
     fadeIntervalRef.current = window.setInterval(() => {
       currentVol -= step
       if (currentVol <= 0) {
         clearInterval(fadeIntervalRef.current!)
         fadeIntervalRef.current = null
-        p.setVolume(0)
-        onComplete()
+        console.log('[fadeAudio] fade complete, invoking callback')
+        callback()
       } else {
         p.setVolume(currentVol)
       }
-    }, 20)
-  }, [state.isPlaying])
+    }, 30)
+  }, [state.isPlaying, state.volume])
 
   // Direct play/pause for mobile Safari (must be synchronous with click)
   const play = useCallback(() => {
@@ -319,11 +328,19 @@ export function useVibePlayer(vibe: Vibe) {
 
   // Next / Prev / Shuffle
   const next = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'NEXT', payload: totalTracksRef.current }))
+    console.log('[next] button clicked', { totalTracks: totalTracksRef.current })
+    fadeAudio(() => {
+      console.log('[next] fadeAudio callback triggered, dispatching NEXT')
+      dispatch({ type: 'NEXT', payload: totalTracksRef.current })
+    })
   }, [fadeAudio])
   
   const prev = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'PREV', payload: totalTracksRef.current }))
+    console.log('[prev] button clicked', { totalTracks: totalTracksRef.current })
+    fadeAudio(() => {
+      console.log('[prev] fadeAudio callback triggered, dispatching PREV')
+      dispatch({ type: 'PREV', payload: totalTracksRef.current })
+    })
   }, [fadeAudio])
   
   const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE', payload: totalTracksRef.current }), [])

@@ -66,8 +66,11 @@ export function createPlayerReducer() {
       case 'PAUSE':
         return { ...state, isPlaying: false }
 
-      case 'NEXT':
-        return { ...state, trackIndex: computeNextIndex(state, action.payload), isPlaying: true, currentTime: 0 }
+      case 'NEXT': {
+        const nextIndex = computeNextIndex(state, action.payload)
+        console.log('[playerReducer] NEXT action. Payload:', action.payload, 'New index:', nextIndex)
+        return { ...state, trackIndex: nextIndex, isPlaying: true, currentTime: 0 }
+      }
 
       case 'PREV':
         if (state.currentTime > 3) {
