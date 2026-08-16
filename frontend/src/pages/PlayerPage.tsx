@@ -65,7 +65,8 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Vibe title */}
       <div className="player-page__title-area">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <h1 className="player-page__vibe-title">{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
               <img 
@@ -75,14 +76,14 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
               />
             </div>
           )}
-          <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
-          <div className={`equalizer visible ${state.isPlaying ? 'is-playing' : ''}`}>
-            <div className="equalizer__bar"></div>
-            <div className="equalizer__bar"></div>
-            <div className="equalizer__bar"></div>
-            <div className="equalizer__bar"></div>
-          </div>
         </div>
+      </div>
+
+      {/* Giant Ambient Equalizer */}
+      <div className={`giant-visualizer ${state.isPlaying ? 'is-playing' : ''}`}>
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div key={i} className="bar" style={{ animationDelay: `-${Math.random() * 1.5}s`, height: `${30 + Math.random() * 70}%` }} />
+        ))}
       </div>
 
       {/* YouTube hidden player (must be in viewport for iOS background playing) */}

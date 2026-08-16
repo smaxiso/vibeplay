@@ -234,10 +234,16 @@ body {
 }
 
 .player-page__vibe-title {
-  font-family: 'Noto Sans Devanagari', sans-serif;
-  font-size: clamp(2rem, 8vw, 5rem);
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(3rem, 10vw, 6rem);
   font-weight: 900;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  text-transform: uppercase;
   line-height: 1.1;
 }
 
@@ -470,13 +476,13 @@ body {
   bottom: 0; left: 0; right: 0;
   z-index: 200;
   max-height: 70vh;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(40px) saturate(1.8);
-  -webkit-backdrop-filter: blur(40px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(20, 20, 25, 0.65);
+  backdrop-filter: blur(25px) saturate(1.2);
+  -webkit-backdrop-filter: blur(25px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: none;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
-  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
+  border-radius: 24px 24px 0 0;
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
@@ -489,9 +495,9 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: sticky; top: 0;
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 10;
@@ -594,22 +600,24 @@ body {
 /* ─── Ambient Glow & Vignette ─── */
 .ambient-glow {
   position: fixed;
-  inset: 0;
+  inset: -50%;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
+  background: radial-gradient(circle at center, var(--accent) 0%, transparent 60%);
   opacity: 0;
   mix-blend-mode: screen;
   transition: opacity 1s ease-in-out;
 }
 
 .ambient-glow.is-playing {
-  animation: pulse-glow 2.5s ease-in-out infinite alternate;
+  animation: pulse-glow 8s ease-in-out infinite alternate;
 }
 
 @keyframes pulse-glow {
-  0% { opacity: 0.2; transform: scale(0.95); }
-  100% { opacity: 0.7; transform: scale(1.1); }
+  0% { opacity: 0.3; transform: translate(0, 0) scale(1); }
+  33% { transform: translate(15%, 20%) scale(1.2); }
+  66% { transform: translate(-10%, 10%) scale(0.9); }
+  100% { opacity: 0.8; transform: translate(5%, -15%) scale(1.1); }
 }
 
 .vignette-overlay {
@@ -620,46 +628,43 @@ body {
   background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.85) 100%);
 }
 
-/* ─── Equalizer Visualizer ─── */
-.equalizer {
+/* ─── Giant Visualizer ─── */
+.giant-visualizer {
+  position: absolute;
+  bottom: 5%;
+  left: 0;
+  right: 0;
+  height: 45vh;
   display: flex;
   align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-  height: 24px;
-  width: 24px;
+  justify-content: space-around;
+  z-index: 1; /* Below text and vignette, above background */
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  padding: 0 5%;
 }
 
-.equalizer.visible {
-  opacity: 1;
+.giant-visualizer.is-playing {
+  opacity: 0.3;
 }
 
-.equalizer__bar {
+.giant-visualizer .bar {
   flex: 1;
-  width: 4px;
-  background-color: var(--accent);
-  border-radius: 2px;
+  margin: 0 4px;
+  background: linear-gradient(to top, var(--accent) 0%, #ffffff 100%);
+  border-radius: 8px 8px 0 0;
   transform-origin: bottom;
-  animation-name: equalize;
-  animation-duration: 0.5s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
+  animation: equalize-giant 0.6s infinite alternate;
   animation-play-state: paused;
 }
 
-.equalizer.is-playing .equalizer__bar {
+.giant-visualizer.is-playing .bar {
   animation-play-state: running;
 }
 
-.equalizer__bar:nth-child(1) { height: 40%; animation-delay: -0.2s; }
-.equalizer__bar:nth-child(2) { height: 100%; animation-delay: -0.5s; }
-.equalizer__bar:nth-child(3) { height: 60%; animation-delay: -0.1s; }
-.equalizer__bar:nth-child(4) { height: 80%; animation-delay: -0.3s; }
-
-@keyframes equalize {
-  0% { transform: scaleY(0.3); }
+@keyframes equalize-giant {
+  0% { transform: scaleY(0.1); }
   100% { transform: scaleY(1); }
 }
 
