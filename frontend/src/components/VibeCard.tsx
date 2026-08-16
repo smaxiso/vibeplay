@@ -23,7 +23,7 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
       />
       <div className="vibe-card__overlay">
-        <h2 className={`vibe-card__title ${name === 'YoYo BT Era' ? 'holographic-text' : ''}`}>{name}</h2>
+        <h2 className={`vibe-card__title ${name === 'YoYo' ? 'holographic-text' : ''}`}>{name}</h2>
         <span className="vibe-card__count">
           {isPlaylist ? 'YouTube Playlist' : `${songCount} songs`}
         </span>

@@ -401,6 +401,10 @@ body {
   z-index: 1;
 }
 
+.player-bar-container.is-playing {
+  animation: dynamicRgbGlow 6s linear infinite alternate;
+}
+
 .player-bar-container.is-playing .player-bar__neon-flow {
   opacity: 1;
 }
