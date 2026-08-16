@@ -204,7 +204,18 @@ export function useVibePlayer(vibe: Vibe) {
     dispatch({ type: 'SEEK', payload: seconds })
   }, [])
 
-  // Next / Prev / Shuffle — simple dispatches (no playlist API needed)
+  // Direct play/pause for mobile Safari (must be synchronous with click)
+  const play = useCallback(() => {
+    playerRef.current?.playVideo()
+    dispatch({ type: 'PLAY' })
+  }, [])
+
+  const pause = useCallback(() => {
+    playerRef.current?.pauseVideo()
+    dispatch({ type: 'PAUSE' })
+  }, [])
+
+  // Next / Prev / Shuffle — simple dispatches
   const next = useCallback(() => dispatch({ type: 'NEXT' }), [])
   const prev = useCallback(() => dispatch({ type: 'PREV' }), [])
   const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE' }), [])
@@ -214,5 +225,29 @@ export function useVibePlayer(vibe: Vibe) {
     return songs[state.trackIndex] || { title: 'Loading...', artist: '', youtubeId: '', duration: '' }
   }, [state.trackIndex, songs])
 
-  return { state, dispatch, seekTo, next, prev, shuffle: toggleShuffle, playerRef, apiError, isLoading, getCurrentSong, songs }
+  // Media Session API for lock screen controls and background play
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      const song = songs[state.trackIndex]
+      if (song && song.title !== 'Loading...') {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: song.title,
+          artist: song.artist || 'VibePlay',
+          album: vibe.nameHindi,
+          artwork: song.thumbnail ? [{ src: song.thumbnail, sizes: '512x512', type: 'image/jpeg' }] : []
+        })
+      }
+    }
+  }, [state.trackIndex, songs, vibe.nameHindi])
+
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', play)
+      navigator.mediaSession.setActionHandler('pause', pause)
+      navigator.mediaSession.setActionHandler('previoustrack', prev)
+      navigator.mediaSession.setActionHandler('nexttrack', next)
+    }
+  }, [play, pause, prev, next])
+
+  return { state, dispatch, play, pause, seekTo, next, prev, shuffle: toggleShuffle, playerRef, apiError, isLoading, getCurrentSong, songs }
 }

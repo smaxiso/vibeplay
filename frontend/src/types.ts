@@ -3,6 +3,7 @@ export interface Song {
   artist: string
   youtubeId: string
   duration: string
+  thumbnail?: string
 }
 
 export interface Vibe {

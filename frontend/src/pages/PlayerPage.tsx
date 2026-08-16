@@ -64,8 +64,8 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
         <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
       </div>
 
-      {/* YouTube hidden player */}
-      <div id="yt-player" style={{ position: 'absolute', top: '-9999px', left: '-9999px', opacity: 0.01, pointerEvents: 'none' }} />
+      {/* YouTube hidden player (must be in viewport for iOS background playing) */}
+      <div id="yt-player" style={{ position: 'absolute', top: 0, left: 0, width: '1px', height: '1px', opacity: 0.01, pointerEvents: 'none', zIndex: -1 }} />
 
       {/* API error state */}
       {apiError && (
