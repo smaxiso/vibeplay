@@ -7,7 +7,12 @@ export default function InstallPrompt() {
   const [isStandalone, setIsStandalone] = useState(false)
 
   useEffect(() => {
-    // Check if already installed
+    // Check if user already dismissed or installed the prompt previously
+    if (localStorage.getItem('vibeplay_pwa_dismissed') === 'true') {
+      return
+    }
+
+    // Check if already installed (standalone mode)
     const isStandAloneMatch = window.matchMedia('(display-mode: standalone)').matches
     // @ts-ignore
     const navStandalone = window.navigator.standalone
@@ -46,7 +51,13 @@ export default function InstallPrompt() {
     if (outcome === 'accepted') {
       setDeferredPrompt(null)
       setShowPrompt(false)
+      localStorage.setItem('vibeplay_pwa_dismissed', 'true')
     }
+  }
+
+  const handleDismiss = () => {
+    setShowPrompt(false)
+    localStorage.setItem('vibeplay_pwa_dismissed', 'true')
   }
 
   if (isStandalone || !showPrompt) return null
@@ -55,7 +66,7 @@ export default function InstallPrompt() {
   return (
     <div className="install-prompt">
       <div className="install-prompt__content">
-        <button className="install-prompt__close" onClick={() => setShowPrompt(false)}>×</button>
+        <button className="install-prompt__close" onClick={handleDismiss} aria-label="Close">×</button>
         <h3>Enjoying VibePlay?</h3>
         <p>Install the app on your home screen for the best experience!</p>
         
