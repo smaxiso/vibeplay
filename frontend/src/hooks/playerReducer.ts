@@ -114,12 +114,15 @@ export function createPlayerReducer(totalTracks: number) {
   }
 }
 
+const savedState = typeof window !== 'undefined' ? localStorage.getItem('vibeplay_state') : null
+const parsedState = savedState ? JSON.parse(savedState) : null
+
 export const initialPlayerState: PlayerState = {
-  trackIndex: 0,
+  trackIndex: parsedState?.trackIndex ?? 0,
   isPlaying: false,
-  shuffle: false,
-  repeat: 'off',
-  volume: 80,
+  shuffle: parsedState?.shuffle ?? false,
+  repeat: parsedState?.repeat ?? 'off',
+  volume: parsedState?.volume ?? 80,
   currentTime: 0,
   duration: 0,
   isDrawerOpen: false,

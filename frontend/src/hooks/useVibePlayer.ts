@@ -23,6 +23,16 @@ export function useVibePlayer(vibe: Vibe) {
     intendedPlayingRef.current = state.isPlaying
   }, [state.isPlaying])
 
+  // Save state to localStorage
+  useEffect(() => {
+    localStorage.setItem('vibeplay_state', JSON.stringify({
+      trackIndex: state.trackIndex,
+      volume: state.volume,
+      shuffle: state.shuffle,
+      repeat: state.repeat
+    }))
+  }, [state.trackIndex, state.volume, state.shuffle, state.repeat])
+
   // Fetch playlist tracks — try Piped API first, fallback to IFrame playlist
   useEffect(() => {
     if (!vibe.playlistId) return
