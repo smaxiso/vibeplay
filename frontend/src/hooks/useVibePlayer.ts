@@ -1,6 +1,6 @@
 import { useReducer, useRef, useEffect, useCallback, useState } from 'react'
 import { Vibe, Song } from '../types'
-import { createPlayerReducer, initialPlayerState } from './playerReducer'
+import { createPlayerReducer, initialPlayerState, computeNextIndex } from './playerReducer'
 import { loadYouTubeAPI, fetchPlaylistItems } from '../utils/youtube'
 
 export function useVibePlayer(vibe: Vibe) {
@@ -18,6 +18,11 @@ export function useVibePlayer(vibe: Vibe) {
   const lastErrorTimeRef = useRef(0)
   const intendedPlayingRef = useRef(state.isPlaying)
   const totalTracksRef = useRef(songs.length || 1)
+  
+  const stateRef = useRef(state)
+  const songsRef = useRef(songs)
+  useEffect(() => { stateRef.current = state }, [state])
+  useEffect(() => { songsRef.current = songs }, [songs])
 
   useEffect(() => {
     totalTracksRef.current = songs.length || 1
@@ -138,10 +143,29 @@ export function useVibePlayer(vibe: Vibe) {
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
+                // Synchronous track change for mobile browsers!
+                // We MUST call playVideo/loadVideoById immediately in this callback 
+                // so the browser recognizes the media playback as a continuation.
+                const currentState = stateRef.current
+                const currentSongs = songsRef.current
+                
+                if (currentState.repeat === 'one') {
+                  playerRef.current?.seekTo(0, true)
+                  playerRef.current?.playVideo()
+                } else if (!usePlaylistFallback) {
+                  const nextIdx = computeNextIndex(currentState, currentSongs.length)
+                  const nextSong = currentSongs[nextIdx]
+                  if (nextSong) {
+                    playerRef.current?.loadVideoById(nextSong.youtubeId)
+                  }
+                }
+                
                 dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
               } else if (event.data === YT.PlayerState.PAUSED) {
+                ;(window as any)._silentAudio?.pause()
                 dispatch({ type: 'PAUSE' })
               } else if (event.data === YT.PlayerState.PLAYING) {
+                ;(window as any)._silentAudio?.play()
                 dispatch({ type: 'PLAY' })
               }
               // When a track starts playing, update its title from video data

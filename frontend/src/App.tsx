@@ -20,9 +20,14 @@ export default function App() {
     const unlockAudio = () => {
       // 1-frame silent WAV base64
       const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA')
+      audio.loop = true // Loop continuously to prevent the OS from suspending the background tab
+      
+      // Store it globally so it doesn't get garbage collected
+      ;(window as any)._silentAudio = audio
+      
       audio.play().catch(() => {})
       
-      // We only need to do this once per session
+      // We only need to start the loop once per session
       document.removeEventListener('touchstart', unlockAudio)
       document.removeEventListener('click', unlockAudio)
     }
