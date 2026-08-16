@@ -19,13 +19,14 @@ interface PlayerBarProps {
   onShuffleToggle: () => void
   onRepeatToggle: () => void
   onPlaylistToggle: () => void
+  isLoading?: boolean
 }
 
 export default function PlayerBar({
   currentSong, isPlaying, currentTime, duration,
   shuffle, repeat, volume,
   onPlay, onPause, onNext, onPrev, onSeek,
-  onVolumeChange, onShuffleToggle, onRepeatToggle, onPlaylistToggle,
+  onVolumeChange, onShuffleToggle, onRepeatToggle, onPlaylistToggle, isLoading
 }: PlayerBarProps) {
   if (!currentSong) return null
 
@@ -35,7 +36,7 @@ export default function PlayerBar({
     ? `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`
     : ''
 
-  const isLoading = !currentSong.youtubeId || currentSong.title === 'Loading...'
+  const isActuallyLoading = isLoading || !currentSong.youtubeId || currentSong.title === 'Loading...'
 
   return (
     <div className="player-bar">
@@ -53,12 +54,21 @@ export default function PlayerBar({
             />
           ) : null}
           <div className="player-bar__thumb-fallback">
-            {isLoading ? '...' : currentSong.title.charAt(0)}
+            {isActuallyLoading ? '...' : currentSong.title.charAt(0)}
           </div>
         </div>
         <div className="player-bar__info">
-          <span className="player-bar__title">{isLoading ? 'Tap play to start' : currentSong.title}</span>
-          <span className="player-bar__artist">{isLoading ? '' : currentSong.artist}</span>
+          {isActuallyLoading ? (
+            <div className="player-bar__skeleton">
+              <div className="skeleton-line skeleton-title"></div>
+              <div className="skeleton-line skeleton-artist"></div>
+            </div>
+          ) : (
+            <>
+              <span className="player-bar__title">{currentSong.title}</span>
+              <span className="player-bar__artist">{currentSong.artist}</span>
+            </>
+          )}
         </div>
         <div className="player-bar__main-controls">
           <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">

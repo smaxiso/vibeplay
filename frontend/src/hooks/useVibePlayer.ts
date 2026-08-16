@@ -16,23 +16,19 @@ export function useVibePlayer(vibe: Vibe) {
   const intervalRef = useRef<number | null>(null)
   const playerReady = useRef(false)
 
-  // Fetch playlist tracks — try Data API first, fallback to IFrame playlist
+  // Fetch playlist tracks — try Piped API first, fallback to IFrame playlist
   useEffect(() => {
     if (!vibe.playlistId) return
 
-    fetchPlaylistItems(vibe.playlistId)
-      .then(items => {
-        if (items.length > 0) {
-          setSongs(items)
-        }
-        setIsLoading(false)
-      })
-      .catch(() => {
-        // Data API failed (403 = not enabled) — fall back to IFrame playlist mode
-        console.warn('YouTube Data API unavailable, using IFrame playlist fallback')
-        setIsLoading(false)
+    fetchPlaylistItems(vibe.playlistId).then(items => {
+      if (items.length > 0) {
+        setSongs(items)
+      } else {
+        // All proxies failed (returned []) — fall back to IFrame playlist mode silently
         setUsePlaylistFallback(true)
-      })
+      }
+      setIsLoading(false)
+    })
   }, [vibe.playlistId])
 
   // Load YouTube IFrame API and create player
@@ -49,8 +45,8 @@ export function useVibePlayer(vibe: Vibe) {
         const firstVideoId = songs.length > 0 ? songs[0].youtubeId : undefined
 
         const playerConfig: YT.PlayerOptions = {
-          height: '0',
-          width: '0',
+          height: '100', // Non-zero dimensions prevent the browser from pausing background tabs
+          width: '100',
           playerVars: {
             autoplay: 0,
             controls: 0,

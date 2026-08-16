@@ -6,8 +6,8 @@ export default function IndexPage() {
   return (
     <div className="index-page">
       <picture className="index-page__bg">
-        <source media="(max-width: 768px)" srcSet="/images/index-bg-mobile.png" />
-        <img src="/images/index-bg-desktop.png" alt="" />
+        <source media="(max-width: 768px)" srcSet="/images/index-bg-mobile.jpg" />
+        <img src="/images/index-bg-desktop.jpg" alt="" />
       </picture>
       <header className="index-header">
         <div className="index-header__glass">
@@ -32,7 +32,7 @@ export default function IndexPage() {
       </div>
 
       <footer className="index-footer">
-        <p>Made with care by <a href="https://github.com/smaxiso" target="_blank" rel="noopener noreferrer">smaxiso</a></p>
+        <p>Made with ❤️ by <a href="https://smaxiso.web.app" target="_blank" rel="noopener noreferrer">smaxiso</a></p>
       </footer>
     </div>
   )

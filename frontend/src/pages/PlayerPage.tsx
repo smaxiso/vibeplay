@@ -27,20 +27,6 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const currentSong = getCurrentSong()
   const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
 
-  if (isLoading) {
-    return (
-      <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
-        <picture>
-          {vibe.bgImageMobile && <source media="(max-width: 768px)" srcSet={vibe.bgImageMobile} />}
-          <img src={vibe.bgImage} alt="" className="player-page__bg" />
-        </picture>
-        <div className="player-page__title-area">
-          <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
-          <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: '1rem' }}>Loading playlist...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
@@ -79,7 +65,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       </div>
 
       {/* YouTube hidden player */}
-      <div id="yt-player" style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }} />
+      <div id="yt-player" style={{ position: 'absolute', top: '-9999px', left: '-9999px', opacity: 0.01, pointerEvents: 'none' }} />
 
       {/* API error state */}
       {apiError && (
@@ -92,6 +78,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       {!apiError && (
         <PlayerBar
           currentSong={currentSong}
+          isLoading={isLoading}
           isPlaying={state.isPlaying}
           currentTime={state.currentTime}
           duration={state.duration}
