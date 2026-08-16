@@ -139,6 +139,10 @@ export function useVibePlayer(vibe: Vibe) {
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
                 dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
+              } else if (event.data === YT.PlayerState.PAUSED) {
+                dispatch({ type: 'PAUSE' })
+              } else if (event.data === YT.PlayerState.PLAYING) {
+                dispatch({ type: 'PLAY' })
               }
               // When a track starts playing, update its title from video data
               if (event.data === YT.PlayerState.PLAYING && usePlaylistFallback) {
