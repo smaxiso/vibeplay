@@ -29,8 +29,8 @@ interface PlaylistItem {
 
 export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistItem[]> {
   const PROD_BACKENDS = [
-    'https://vibeplay-api.vercel.app',
-    'https://vibeplay-api.onrender.com'
+    'https://vibeplay-api.onrender.com',
+    'https://vibeplay-api.vercel.app'
   ]
 
   // In development, prioritize localhost. In production, prioritize Vercel/Render.

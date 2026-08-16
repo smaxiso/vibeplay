@@ -86,8 +86,15 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* API error state */}
       {apiError && (
-        <div className="player-page__error">
-          <p>Unable to load player. Check your connection and reload.</p>
+        <div className="player-page__error-screen">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" className="error-icon">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <h2>Connection Lost</h2>
+          <p>We couldn't connect to the music servers. They might be sleeping or blocked by your network.</p>
+          <button onClick={() => window.location.reload()} className="player-page__retry-btn">
+            Retry Connection
+          </button>
         </div>
       )}
 
