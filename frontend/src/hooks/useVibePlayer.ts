@@ -75,7 +75,7 @@ export function useVibePlayer(vibe: Vibe) {
       .then(() => {
         if (destroyed) return
 
-        const firstVideoId = songs.length > 0 ? songs[0].youtubeId : undefined
+        const initialSongId = songs.length > 0 ? (songs[state.trackIndex]?.youtubeId || songs[0].youtubeId) : undefined
 
         const playerConfig: YT.PlayerOptions = {
           height: '100', // Non-zero dimensions prevent the browser from pausing background tabs
@@ -104,7 +104,7 @@ export function useVibePlayer(vibe: Vibe) {
                 (p as any).cuePlaylist({
                   list: vibe.playlistId,
                   listType: 'playlist',
-                  index: 0,
+                  index: state.trackIndex,
                 })
                 // After cueing, grab the playlist video IDs
                 setTimeout(() => {
@@ -117,17 +117,17 @@ export function useVibePlayer(vibe: Vibe) {
                       duration: '',
                     }))
                     setSongs(tracks)
-                    // Now cue the first video individually for clean playback
-                    p.cueVideoById(videoIds[0])
+                    // Now cue the correct video individually for clean playback
+                    p.cueVideoById(videoIds[state.trackIndex] || videoIds[0])
                   }
-                  // Get title of first track
+                  // Get title of current track
                   setTimeout(() => {
                     const data = (p as any).getVideoData?.()
                     if (data && data.title) {
                       setSongs(prev => {
                         const updated = [...prev]
-                        if (updated[0]) {
-                          updated[0] = { ...updated[0], title: data.title, artist: data.author || '' }
+                        if (updated[state.trackIndex]) {
+                          updated[state.trackIndex] = { ...updated[state.trackIndex], title: data.title, artist: data.author || '' }
                         }
                         return updated
                       })
@@ -180,8 +180,8 @@ export function useVibePlayer(vibe: Vibe) {
           },
         }
 
-        if (firstVideoId) {
-          playerConfig.videoId = firstVideoId
+        if (initialSongId) {
+          playerConfig.videoId = initialSongId
         }
 
         new YT.Player('yt-player', playerConfig)

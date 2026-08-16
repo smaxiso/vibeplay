@@ -24,9 +24,11 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
       />
       <div className="vibe-card__overlay">
         <h2 className={`vibe-card__title ${name === 'YoYo' ? 'holographic-text' : ''}`}>{name}</h2>
-        <span className="vibe-card__count">
-          {isPlaylist ? 'YouTube Playlist' : `${songCount} songs`}
-        </span>
+        {songCount > 0 && (
+          <span className="vibe-card__count">
+            {songCount} songs
+          </span>
+        )}
       </div>
     </Link>
   )

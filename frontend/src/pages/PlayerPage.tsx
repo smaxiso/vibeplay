@@ -159,12 +159,14 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
           <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
           {currentSong?.youtubeId && (
-            <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
-              <img 
-                src={currentSong.thumbnail || `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`} 
-                alt="Album Art" 
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-              />
+            <div className={`spinning-disc-wrapper ${state.isPlaying ? 'is-playing' : ''}`}>
+              <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
+                <img 
+                  src={currentSong.thumbnail || `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`} 
+                  alt="Album Art" 
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              </div>
             </div>
           )}
         </div>
