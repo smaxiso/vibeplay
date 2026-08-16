@@ -35,13 +35,13 @@ export interface PlayerState {
 export type PlayerAction =
   | { type: 'PLAY' }
   | { type: 'PAUSE' }
-  | { type: 'NEXT' }
-  | { type: 'PREV' }
+  | { type: 'NEXT'; payload: number }
+  | { type: 'PREV'; payload: number }
   | { type: 'SEEK'; payload: number }
   | { type: 'SELECT_TRACK'; payload: number }
-  | { type: 'TOGGLE_SHUFFLE' }
+  | { type: 'TOGGLE_SHUFFLE'; payload: number }
   | { type: 'TOGGLE_REPEAT' }
   | { type: 'SET_VOLUME'; payload: number }
   | { type: 'TIME_UPDATE'; payload: { current: number; duration: number } }
-  | { type: 'TRACK_ENDED' }
+  | { type: 'TRACK_ENDED'; payload: number }
   | { type: 'TOGGLE_DRAWER' }

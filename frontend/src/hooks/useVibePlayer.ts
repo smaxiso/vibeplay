@@ -9,8 +9,7 @@ export function useVibePlayer(vibe: Vibe) {
   const [apiError, setApiError] = useState(false)
   const [usePlaylistFallback, setUsePlaylistFallback] = useState(false)
 
-  const totalTracks = songs.length || 1
-  const reducer = useCallback(createPlayerReducer(totalTracks), [totalTracks])
+  const reducer = useCallback(createPlayerReducer(), [])
   const [state, dispatch] = useReducer(reducer, initialPlayerState)
   const playerRef = useRef<YT.Player | null>(null)
   const intervalRef = useRef<number | null>(null)
@@ -18,6 +17,11 @@ export function useVibePlayer(vibe: Vibe) {
   const errorCountRef = useRef(0)
   const lastErrorTimeRef = useRef(0)
   const intendedPlayingRef = useRef(state.isPlaying)
+  const totalTracksRef = useRef(songs.length || 1)
+
+  useEffect(() => {
+    totalTracksRef.current = songs.length || 1
+  }, [songs.length])
   const fadeIntervalRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -133,7 +137,7 @@ export function useVibePlayer(vibe: Vibe) {
             },
             onStateChange: (event: YT.OnStateChangeEvent) => {
               if (event.data === YT.PlayerState.ENDED) {
-                dispatch({ type: 'TRACK_ENDED' })
+                dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
               }
               // When a track starts playing, update its title from video data
               if (event.data === YT.PlayerState.PLAYING && usePlaylistFallback) {
@@ -166,7 +170,7 @@ export function useVibePlayer(vibe: Vibe) {
                 return
               }
               
-              dispatch({ type: 'NEXT' })
+              dispatch({ type: 'NEXT', payload: totalTracksRef.current })
             },
           },
         }
@@ -310,13 +314,14 @@ export function useVibePlayer(vibe: Vibe) {
 
   // Next / Prev / Shuffle
   const next = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'NEXT' }))
+    fadeAudio(() => dispatch({ type: 'NEXT', payload: totalTracksRef.current }))
   }, [fadeAudio])
   
   const prev = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'PREV' }))
+    fadeAudio(() => dispatch({ type: 'PREV', payload: totalTracksRef.current }))
   }, [fadeAudio])
-  const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE' }), [])
+  
+  const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE', payload: totalTracksRef.current }), [])
 
   // Current song
   const getCurrentSong = useCallback((): Song => {

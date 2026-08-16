@@ -74,8 +74,17 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
             if (currentSong?.youtubeId) {
               const url = new URL(window.location.href)
               url.searchParams.set('v', currentSong.youtubeId)
-              navigator.clipboard.writeText(url.toString())
-              alert('Song link copied to clipboard!')
+              const shareData = {
+                title: `Listen to ${currentSong.title} on VibePlay`,
+                text: `Check out ${currentSong.title} by ${currentSong.artist} on VibePlay!`,
+                url: url.toString()
+              }
+              if (navigator.share) {
+                navigator.share(shareData).catch(() => {})
+              } else {
+                navigator.clipboard.writeText(url.toString())
+                alert('Song link copied to clipboard!')
+              }
             }
           }}
           className="smart-share-toast__btn"
@@ -136,8 +145,17 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
               if (currentSong?.youtubeId) {
                 const url = new URL(window.location.href)
                 url.searchParams.set('v', currentSong.youtubeId)
-                navigator.clipboard.writeText(url.toString())
-                alert('Song link copied to clipboard!')
+                const shareData = {
+                  title: `Listen to ${currentSong.title} on VibePlay`,
+                  text: `Check out ${currentSong.title} by ${currentSong.artist} on VibePlay!`,
+                  url: url.toString()
+                }
+                if (navigator.share) {
+                  navigator.share(shareData).catch(() => {})
+                } else {
+                  navigator.clipboard.writeText(url.toString())
+                  alert('Song link copied to clipboard!')
+                }
               }
             }}
             className="player-page__title-share"
@@ -210,6 +228,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           } else {
             dispatch({ type: 'SELECT_TRACK', payload: i })
           }
+          dispatch({ type: 'TOGGLE_DRAWER' })
         }}
         onClose={() => dispatch({ type: 'TOGGLE_DRAWER' })}
       />

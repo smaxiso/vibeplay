@@ -57,7 +57,7 @@ function handleTrackEnded(state: PlayerState, totalTracks: number): PlayerState 
   }
 }
 
-export function createPlayerReducer(totalTracks: number) {
+export function createPlayerReducer() {
   return function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
     switch (action.type) {
       case 'PLAY':
@@ -67,13 +67,13 @@ export function createPlayerReducer(totalTracks: number) {
         return { ...state, isPlaying: false }
 
       case 'NEXT':
-        return { ...state, trackIndex: computeNextIndex(state, totalTracks), isPlaying: true, currentTime: 0 }
+        return { ...state, trackIndex: computeNextIndex(state, action.payload), isPlaying: true, currentTime: 0 }
 
       case 'PREV':
         if (state.currentTime > 3) {
           return { ...state, currentTime: 0 }
         }
-        return { ...state, trackIndex: computePrevIndex(state, totalTracks), isPlaying: true, currentTime: 0 }
+        return { ...state, trackIndex: computePrevIndex(state, action.payload), isPlaying: true, currentTime: 0 }
 
       case 'SEEK':
         return { ...state, currentTime: action.payload }
@@ -86,7 +86,7 @@ export function createPlayerReducer(totalTracks: number) {
         return {
           ...state,
           shuffle,
-          shuffleOrder: shuffle ? generateShuffleOrder(state.trackIndex, totalTracks) : []
+          shuffleOrder: shuffle ? generateShuffleOrder(state.trackIndex, action.payload) : []
         }
       }
 
@@ -103,7 +103,7 @@ export function createPlayerReducer(totalTracks: number) {
         return { ...state, currentTime: action.payload.current, duration: action.payload.duration }
 
       case 'TRACK_ENDED':
-        return handleTrackEnded(state, totalTracks)
+        return handleTrackEnded(state, action.payload)
 
       case 'TOGGLE_DRAWER':
         return { ...state, isDrawerOpen: !state.isDrawerOpen }
