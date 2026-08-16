@@ -17,6 +17,11 @@ export function useVibePlayer(vibe: Vibe) {
   const playerReady = useRef(false)
   const errorCountRef = useRef(0)
   const lastErrorTimeRef = useRef(0)
+  const intendedPlayingRef = useRef(state.isPlaying)
+
+  useEffect(() => {
+    intendedPlayingRef.current = state.isPlaying
+  }, [state.isPlaying])
 
   // Fetch playlist tracks — try Piped API first, fallback to IFrame playlist
   useEffect(() => {
@@ -63,6 +68,10 @@ export function useVibePlayer(vibe: Vibe) {
               const p = playerRef.current
               p.setVolume(initialPlayerState.volume)
               playerReady.current = true
+
+              if (intendedPlayingRef.current) {
+                p.playVideo()
+              }
 
               // If fallback mode, cue the playlist to get video IDs
               if (usePlaylistFallback && vibe.playlistId) {

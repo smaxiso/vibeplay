@@ -35,8 +35,8 @@ export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistIt
 
   // In development, prioritize localhost. In production, prioritize Vercel/Render.
   const BACKEND_URLS = import.meta.env.DEV 
-    ? ['http://localhost:10000', ...PROD_BACKENDS]
-    : [...PROD_BACKENDS, 'http://localhost:10000']
+    ? ['http://localhost:3001', ...PROD_BACKENDS]
+    : [...PROD_BACKENDS, 'http://localhost:3001']
 
   for (const baseUrl of BACKEND_URLS) {
     try {
