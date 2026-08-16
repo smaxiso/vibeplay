@@ -260,8 +260,8 @@ export function useVibePlayer(vibe: Vibe) {
       intervalRef.current = window.setInterval(() => {
         const p = playerRef.current
         if (p && typeof p.getCurrentTime === 'function') {
-          const current = p.getCurrentTime()
-          const duration = p.getDuration()
+          const current = p.getCurrentTime() || 0
+          const duration = p.getDuration() || 0
           
           dispatch({ type: 'TIME_UPDATE', payload: { current, duration } })
 

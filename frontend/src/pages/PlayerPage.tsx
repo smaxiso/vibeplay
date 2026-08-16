@@ -26,7 +26,7 @@ export default function PlayerPage() {
 import UpNextToast from '../components/UpNextToast'
 import { computeNextIndex } from '../hooks/playerReducer'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
-import { ShareIcon } from '../components/Icons'
+import { ShareIcon, VolumeIcon } from '../components/Icons'
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
@@ -56,7 +56,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
     if (state.isPlaying) {
       timeout = setTimeout(() => {
         setShowShareToast(true)
-        setTimeout(() => setShowShareToast(false), 5000)
+        setTimeout(() => setShowShareToast(false), 10000)
       }, 45000)
     }
     return () => clearTimeout(timeout)
@@ -112,9 +112,12 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       <div className="vignette-overlay" />
 
       {/* Top bar */}
-      <div className="player-page__topbar">
-        <Link to="/" className="player-page__back" aria-label="Back to vibes">← Vibes</Link>
-        <div className="player-page__top-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="player-page__topbar" style={{ alignItems: 'flex-start' }}>
+        <Link to="/" className="player-page__back" aria-label="Back to vibes">
+          <span className="back-arrow">←</span>
+          <span className="back-text"> Vibes</span>
+        </Link>
+        <div className="player-page__top-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '4px' }}>
           <a
             href={youtubeUrl}
             target="_blank"
@@ -151,13 +154,36 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           >
             <ShareIcon />
           </button>
+          <div className="player-page__volume-container">
+            <button 
+              className="player-page__source-link" 
+              onClick={handleMuteToggle}
+              style={{ border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              aria-label="Toggle Mute"
+              title="Volume"
+            >
+              <VolumeIcon size={20} />
+            </button>
+            <div className="player-page__volume-popover">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={state.volume}
+                onChange={(e) => dispatch({ type: 'SET_VOLUME', payload: Number(e.target.value) })}
+                className="player-page__volume-slider"
+                aria-label="Volume"
+                style={{ '--progress': `${state.volume}%` } as React.CSSProperties}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Vibe title */}
       <div className="player-page__title-area">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
-          <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
+          <h1 className={`player-page__vibe-title ${vibe.name === 'Yo Yo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc-wrapper ${state.isPlaying ? 'is-playing' : ''}`}>
               <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
@@ -204,13 +230,11 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           duration={state.duration}
           shuffle={state.shuffle}
           repeat={state.repeat}
-          volume={state.volume}
           onPlay={() => dispatch({ type: 'PLAY' })}
           onPause={() => dispatch({ type: 'PAUSE' })}
           onNext={next}
           onPrev={prev}
           onSeek={seekTo}
-          onVolumeChange={(v) => dispatch({ type: 'SET_VOLUME', payload: v })}
           onShuffleToggle={shuffle}
           onRepeatToggle={() => dispatch({ type: 'TOGGLE_REPEAT' })}
           onPlaylistToggle={() => dispatch({ type: 'TOGGLE_DRAWER' })}

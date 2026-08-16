@@ -1,6 +1,6 @@
 import { Song, RepeatMode } from '../types'
 import { formatTime } from '../utils/format'
-import { PlayIcon, PauseIcon, NextIcon, PrevIcon, ShuffleIcon, RepeatIcon, RepeatOneIcon, PlaylistIcon, VolumeIcon } from './Icons'
+import { PlayIcon, PauseIcon, NextIcon, PrevIcon, ShuffleIcon, RepeatIcon, RepeatOneIcon, PlaylistIcon } from './Icons'
 import Marquee from './Marquee'
 
 interface PlayerBarProps {
@@ -10,13 +10,11 @@ interface PlayerBarProps {
   duration: number
   shuffle: boolean
   repeat: RepeatMode
-  volume: number
   onPlay: () => void
   onPause: () => void
   onNext: () => void
   onPrev: () => void
   onSeek: (seconds: number) => void
-  onVolumeChange: (vol: number) => void
   onShuffleToggle: () => void
   onRepeatToggle: () => void
   onPlaylistToggle: () => void
@@ -25,9 +23,9 @@ interface PlayerBarProps {
 
 export default function PlayerBar({
   currentSong, isPlaying, currentTime, duration,
-  shuffle, repeat, volume,
+  shuffle, repeat,
   onPlay, onPause, onNext, onPrev, onSeek,
-  onVolumeChange, onShuffleToggle, onRepeatToggle, onPlaylistToggle, isLoading
+  onShuffleToggle, onRepeatToggle, onPlaylistToggle, isLoading
 }: PlayerBarProps) {
   if (!currentSong) return null
 
@@ -73,15 +71,9 @@ export default function PlayerBar({
             </>
           )}
         </div>
-        <div className="player-bar__main-controls">
-          <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">
-            <PrevIcon />
-          </button>
-          <button onClick={isPlaying ? onPause : onPlay} className="player-bar__btn player-bar__btn--play" aria-label={isPlaying ? 'Pause' : 'Play'}>
-            {isPlaying ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
-          </button>
-          <button onClick={onNext} className="player-bar__btn" aria-label="Next track">
-            <NextIcon />
+        <div className="player-bar__top-actions" style={{ marginLeft: 'auto' }}>
+          <button onClick={onPlaylistToggle} className="player-bar__btn-sm" aria-label="Toggle playlist">
+            <PlaylistIcon />
           </button>
         </div>
       </div>
@@ -102,29 +94,23 @@ export default function PlayerBar({
         <span className="player-bar__time">{formatTime(duration)}</span>
       </div>
 
-      {/* Row 3: Secondary controls */}
+      {/* Row 3: Main controls */}
       <div className="player-bar__secondary">
         <button onClick={onShuffleToggle} className={`player-bar__btn-sm ${shuffle ? 'active' : ''}`} aria-label="Shuffle">
           <ShuffleIcon />
         </button>
+        <button onClick={onPrev} className="player-bar__btn" aria-label="Previous track">
+          <PrevIcon />
+        </button>
+        <button onClick={isPlaying ? onPause : onPlay} className="player-bar__btn player-bar__btn--play" aria-label={isPlaying ? 'Pause' : 'Play'}>
+          {isPlaying ? <PauseIcon size={22} /> : <PlayIcon size={22} />}
+        </button>
+        <button onClick={onNext} className="player-bar__btn" aria-label="Next track">
+          <NextIcon />
+        </button>
         <button onClick={onRepeatToggle} className={`player-bar__btn-sm ${repeat !== 'off' ? 'active' : ''}`} aria-label={`Repeat: ${repeat}`}>
           {repeat === 'one' ? <RepeatOneIcon /> : <RepeatIcon />}
         </button>
-        <button onClick={onPlaylistToggle} className="player-bar__btn-sm" aria-label="Toggle playlist">
-          <PlaylistIcon />
-        </button>
-        <div className="player-bar__vol-group">
-          <VolumeIcon size={14} />
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={volume}
-            onChange={(e) => onVolumeChange(Number(e.target.value))}
-            className="player-bar__volume"
-            aria-label="Volume"
-          />
-        </div>
       </div>
       </div>
     </div>
