@@ -6,24 +6,26 @@ app.use(cors()) // Bypass CORS!
 
 const { Innertube, UniversalCache } = require('youtubei.js')
 
-let yt = null
-async function initYoutube() {
-  try {
-    yt = await Innertube.create({ cache: new UniversalCache(false) })
+let ytPromise = Innertube.create({ cache: new UniversalCache(false) })
+  .then(instance => {
     console.log("InnerTube Initialized successfully")
-  } catch (error) {
+    return instance
+  })
+  .catch(error => {
     console.error("Failed to initialize InnerTube:", error)
-  }
-}
-initYoutube()
+    throw error
+  })
 
 const cache = new Map() // Stores the playlist data
 const pendingRequests = new Map() // Stores ongoing fetch promises (prevents Cache Stampedes)
 const CACHE_DURATION_MS = 1000 * 60 * 60 * 24 // 24 hours
 
 app.get('/api/playlist/:id', async (req, res) => {
-  if (!yt) {
-    return res.status(503).json({ error: 'InnerTube not initialized yet' })
+  let yt;
+  try {
+    yt = await ytPromise;
+  } catch (error) {
+    return res.status(500).json({ error: 'InnerTube failed to initialize' })
   }
   const { id } = req.params
 
