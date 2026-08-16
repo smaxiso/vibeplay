@@ -108,8 +108,9 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       </picture>
       
       {/* Ambient Glow & Vignette */}
-      <div className={`ambient-glow ${state.isPlaying ? 'is-playing' : ''}`} />
+      <div className={`ambient-glow ${state.isPlaying ? 'is-playing' : ''}`} style={{ '--accent': vibe.color } as React.CSSProperties} />
       <div className="vignette-overlay" />
+      <div className="sweeping-spotlight" />
 
       {/* Top bar */}
       <div className="player-page__topbar" style={{ alignItems: 'flex-start' }}>

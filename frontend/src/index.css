@@ -925,7 +925,24 @@ body {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.85) 100%);
+  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+/* ─── Sweeping Volumetric Spotlight ─── */
+.sweeping-spotlight {
+  position: fixed;
+  inset: -100%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, transparent 40%);
+  animation: sweep-light 30s ease-in-out infinite alternate;
+  mix-blend-mode: overlay;
+}
+
+@keyframes sweep-light {
+  0% { transform: translate(-20%, -30%) scale(1); }
+  50% { transform: translate(30%, 10%) scale(1.5); }
+  100% { transform: translate(-10%, 40%) scale(1.2); }
 }
 
 
