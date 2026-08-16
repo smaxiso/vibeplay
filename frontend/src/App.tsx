@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import IndexPage from './pages/IndexPage'
+import InstallPrompt from './components/InstallPrompt'
 
 const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="*" element={<IndexPage />} />
         </Routes>
       </Suspense>
+      <InstallPrompt />
     </BrowserRouter>
   )
 }

@@ -747,3 +747,75 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* ─── Install Prompt ─── */
+.install-prompt {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
+  background: rgba(25, 25, 30, 0.85);
+  backdrop-filter: blur(25px) saturate(1.5);
+  -webkit-backdrop-filter: blur(25px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  animation: slide-down 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.install-prompt__content {
+  position: relative;
+  padding: 1.5rem;
+  color: #fff;
+}
+
+.install-prompt__close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.install-prompt h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.install-prompt p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.install-prompt__ios-instructions {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.install-prompt__btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+@keyframes slide-down {
+  from { transform: translate(-50%, -150%); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
