@@ -247,27 +247,32 @@ export function useVibePlayer(vibe: Vibe) {
     playerRef.current?.setVolume(state.volume)
   }, [state.volume])
 
+  const isTransitioningRef = useRef(false)
+
   // 1Hz time polling
   useEffect(() => {
     if (state.isPlaying) {
       intervalRef.current = window.setInterval(() => {
         const p = playerRef.current
-        if (p && p.getCurrentTime) {
-          dispatch({
-            type: 'TIME_UPDATE',
-            payload: {
-              current: p.getCurrentTime(),
-              duration: p.getDuration() || 0,
-            },
-          })
+        if (p && typeof p.getCurrentTime === 'function') {
+          const current = p.getCurrentTime()
+          const duration = p.getDuration()
+          
+          dispatch({ type: 'TIME_UPDATE', payload: { current, duration } })
+
+          // Robust workaround: If we are extremely close to the end (within 1 second)
+          // manually trigger TRACK_ENDED to avoid ad-blocker freezing bugs on YouTube API
+          if (duration > 0 && (duration - current) < 1 && !isTransitioningRef.current) {
+            isTransitioningRef.current = true
+            dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
+            setTimeout(() => { isTransitioningRef.current = false }, 3000) // debounce
+          }
         }
       }, 1000)
-    } else {
-      if (intervalRef.current) {
+    } else if (intervalRef.current) {
         clearInterval(intervalRef.current)
         intervalRef.current = null
       }
-    }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current)
     }
