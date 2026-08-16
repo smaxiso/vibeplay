@@ -28,22 +28,25 @@ interface PlaylistItem {
 }
 
 export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistItem[]> {
-  // Try multiple backends in order: Vercel (fastest), Render (fallback), Localhost (dev)
-  const API_URLS = [
-    'https://vibeplay-api.vercel.app/api/playlist',
-    'https://vibeplay-api.onrender.com/api/playlist',
-    'http://localhost:3001/api/playlist'
+  const PROD_BACKENDS = [
+    'https://vibeplay-api.vercel.app',
+    'https://vibeplay-api.onrender.com'
   ]
 
-  for (const url of API_URLS) {
+  // In development, prioritize localhost. In production, prioritize Vercel/Render.
+  const BACKEND_URLS = import.meta.env.DEV 
+    ? ['http://localhost:10000', ...PROD_BACKENDS]
+    : [...PROD_BACKENDS, 'http://localhost:10000']
+
+  for (const baseUrl of BACKEND_URLS) {
     try {
-      const res = await fetch(`${url}/${playlistId}`)
+      const res = await fetch(`${baseUrl}/api/playlist/${playlistId}`)
       if (res.ok) {
         const data = await res.json()
         if (data.items) return data.items
       }
     } catch (err) {
-      console.warn(`Failed to fetch from ${url}, trying next fallback...`)
+      console.warn(`Failed to fetch from ${baseUrl}, trying next fallback...`)
     }
   }
 

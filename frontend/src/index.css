@@ -470,13 +470,15 @@ body {
   bottom: 0; left: 0; right: 0;
   z-index: 200;
   max-height: 70vh;
-  background: rgba(15, 15, 40, 0.75);
-  backdrop-filter: blur(30px) saturate(1.5);
-  -webkit-backdrop-filter: blur(30px) saturate(1.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(40px) saturate(1.8);
+  -webkit-backdrop-filter: blur(40px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: none;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
   border-radius: var(--radius) var(--radius) 0 0;
   transform: translateY(100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow-y: auto;
 }
 
@@ -487,11 +489,12 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   position: sticky; top: 0;
-  background: rgba(15, 15, 40, 0.9);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  z-index: 10;
 }
 
 .playlist-drawer__header h3 { font-size: 1rem; }
@@ -594,19 +597,19 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: radial-gradient(circle at center, var(--accent) 0%, transparent 60%);
+  background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%);
   opacity: 0;
-  mix-blend-mode: overlay;
+  mix-blend-mode: screen;
   transition: opacity 1s ease-in-out;
 }
 
 .ambient-glow.is-playing {
-  animation: pulse-glow 3s ease-in-out infinite alternate;
+  animation: pulse-glow 2.5s ease-in-out infinite alternate;
 }
 
 @keyframes pulse-glow {
-  0% { opacity: 0.1; transform: scale(1); }
-  100% { opacity: 0.35; transform: scale(1.1); }
+  0% { opacity: 0.2; transform: scale(0.95); }
+  100% { opacity: 0.7; transform: scale(1.1); }
 }
 
 .vignette-overlay {
@@ -614,7 +617,7 @@ body {
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+  background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.85) 100%);
 }
 
 /* ─── Equalizer Visualizer ─── */
@@ -623,11 +626,10 @@ body {
   align-items: flex-end;
   justify-content: center;
   gap: 3px;
-  height: 20px;
-  width: 20px;
+  height: 24px;
+  width: 24px;
   opacity: 0;
   transition: opacity 0.3s;
-  margin-left: auto;
 }
 
 .equalizer.visible {
@@ -636,12 +638,12 @@ body {
 
 .equalizer__bar {
   flex: 1;
-  width: 3px;
+  width: 4px;
   background-color: var(--accent);
   border-radius: 2px;
   transform-origin: bottom;
   animation-name: equalize;
-  animation-duration: 0.6s;
+  animation-duration: 0.5s;
   animation-iteration-count: infinite;
   animation-direction: alternate;
   animation-play-state: paused;
@@ -659,4 +661,43 @@ body {
 @keyframes equalize {
   0% { transform: scaleY(0.3); }
   100% { transform: scaleY(1); }
+}
+
+/* ─── Spinning Disc ─── */
+.spinning-disc {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  overflow: hidden;
+  animation: spin 8s linear infinite;
+  animation-play-state: paused;
+  flex-shrink: 0;
+}
+
+.spinning-disc.is-playing {
+  animation-play-state: running;
+}
+
+.spinning-disc::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px; height: 16px;
+  background: #111;
+  border-radius: 50%;
+  border: 2px solid #333;
+}
+
+.spinning-disc img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

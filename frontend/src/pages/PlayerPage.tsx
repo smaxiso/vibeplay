@@ -65,7 +65,24 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Vibe title */}
       <div className="player-page__title-area">
-        <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {currentSong?.youtubeId && (
+            <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
+              <img 
+                src={currentSong.thumbnail || `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`} 
+                alt="Album Art" 
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            </div>
+          )}
+          <h1 className="player-page__vibe-title">{vibe.nameHindi}</h1>
+          <div className={`equalizer visible ${state.isPlaying ? 'is-playing' : ''}`}>
+            <div className="equalizer__bar"></div>
+            <div className="equalizer__bar"></div>
+            <div className="equalizer__bar"></div>
+            <div className="equalizer__bar"></div>
+          </div>
+        </div>
       </div>
 
       {/* YouTube hidden player (must be in viewport for iOS background playing) */}
