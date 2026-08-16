@@ -12,7 +12,7 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
   return (
     <div className={`playlist-drawer ${isOpen ? 'open' : ''}`}>
       <div className="playlist-drawer__header">
-        <h3>Playlist{songs.length > 0 ? ` (${songs.length} songs)` : ''}</h3>
+        <h3>Playlist</h3>
         <button onClick={onClose} className="playlist-drawer__close" aria-label="Close playlist">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>

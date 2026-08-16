@@ -79,12 +79,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
         </div>
       </div>
 
-      {/* Giant Ambient Equalizer */}
-      <div className={`giant-visualizer ${state.isPlaying ? 'is-playing' : ''}`}>
-        {Array.from({ length: 16 }).map((_, i) => (
-          <div key={i} className="bar" style={{ animationDelay: `-${Math.random() * 1.5}s`, height: `${30 + Math.random() * 70}%` }} />
-        ))}
-      </div>
+
 
       {/* YouTube hidden player (must be in viewport for iOS background playing) */}
       <div id="yt-player" style={{ position: 'absolute', top: 0, left: 0, width: '1px', height: '1px', opacity: 0.01, pointerEvents: 'none', zIndex: -1 }} />
