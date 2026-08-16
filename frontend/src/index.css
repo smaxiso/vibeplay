@@ -186,6 +186,87 @@ body {
   margin-top: 0.25rem;
 }
 
+/* ─── Share UI ─── */
+.smart-share-toast {
+  position: fixed;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(25, 25, 30, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.25rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 1000;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.smart-share-toast.visible {
+  top: 1.5rem;
+}
+
+.smart-share-toast__btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 15px var(--accent);
+  animation: pulse-glow-btn 2s infinite alternate;
+}
+
+@keyframes pulse-glow-btn {
+  0% { transform: scale(1); box-shadow: 0 0 10px var(--accent); }
+  100% { transform: scale(1.1); box-shadow: 0 0 20px var(--accent); }
+}
+
+.player-page__title-share {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) {
+  .player-page__title-share:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+  }
+}
+
+.artist-signature {
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* ─── Player Page ─── */
 .player-page {
   position: relative;
@@ -401,12 +482,14 @@ body {
   z-index: 1;
 }
 
-.player-bar-container.is-playing {
-  animation: dynamicRgbGlow 6s linear infinite alternate;
-}
-
 .player-bar-container.is-playing .player-bar__neon-flow {
   opacity: 1;
+  animation: spin 4s linear infinite, rgbHueRotate 8s linear infinite;
+}
+
+@keyframes rgbHueRotate {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
 }
 
 .player-bar__row {
@@ -800,16 +883,8 @@ body {
   flex-shrink: 0;
 }
 
-@keyframes dynamicRgbGlow {
-  0% { border-color: rgba(255, 0, 0, 0.8); box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
-  33% { border-color: rgba(0, 255, 0, 0.8); box-shadow: 0 0 25px rgba(0, 255, 0, 0.6); }
-  66% { border-color: rgba(0, 150, 255, 0.8); box-shadow: 0 0 25px rgba(0, 150, 255, 0.6); }
-  100% { border-color: rgba(255, 0, 255, 0.8); box-shadow: 0 0 25px rgba(255, 0, 255, 0.6); }
-}
-
 .spinning-disc.is-playing {
   animation-play-state: running;
-  animation: spin 8s linear infinite, dynamicRgbGlow 6s linear infinite alternate;
 }
 
 .spinning-disc::after {

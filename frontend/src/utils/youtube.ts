@@ -27,7 +27,13 @@ interface PlaylistItem {
   thumbnail: string
 }
 
+const playlistCache: Record<string, PlaylistItem[]> = {}
+
 export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistItem[]> {
+  if (playlistCache[playlistId]) {
+    return playlistCache[playlistId]
+  }
+
   const PROD_BACKENDS = [
     'https://vibeplay-api.onrender.com',
     'https://vibeplay-api.vercel.app'
@@ -43,7 +49,10 @@ export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistIt
       const res = await fetch(`${baseUrl}/api/playlist/${playlistId}`)
       if (res.ok) {
         const data = await res.json()
-        if (data.items) return data.items
+        if (data.items) {
+          playlistCache[playlistId] = data.items
+          return data.items
+        }
       }
     } catch (err) {
       console.warn(`Failed to fetch from ${baseUrl}, trying next fallback...`)

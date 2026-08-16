@@ -1,8 +1,19 @@
+import { useEffect } from 'react'
 import vibes from '../data/vibes.json'
 import VibeCard from '../components/VibeCard'
 import { Vibe } from '../types'
+import { fetchPlaylistItems } from '../utils/youtube'
 
 export default function IndexPage() {
+  // Preload playlists in the background for zero-delay mobile loading
+  useEffect(() => {
+    ;(vibes as Vibe[]).forEach(vibe => {
+      if (vibe.playlistId) {
+        fetchPlaylistItems(vibe.playlistId).catch(() => {})
+      }
+    })
+  }, [])
+
   return (
     <div className="index-page">
       <picture className="index-page__bg">

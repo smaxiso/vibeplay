@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import vibes from '../data/vibes.json'
 import { Vibe } from '../types'
@@ -25,6 +26,7 @@ export default function PlayerPage() {
 import UpNextToast from '../components/UpNextToast'
 import { computeNextIndex } from '../hooks/playerReducer'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
+import { ShareIcon } from '../components/Icons'
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
@@ -47,9 +49,41 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const nextTrackIndex = computeNextIndex(state, songs.length || 1)
   const nextSongTitle = songs[nextTrackIndex]?.title || ''
 
+  // Smart Share Toast Logic
+  const [showShareToast, setShowShareToast] = useState(false)
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>
+    if (state.isPlaying) {
+      timeout = setTimeout(() => {
+        setShowShareToast(true)
+        setTimeout(() => setShowShareToast(false), 5000)
+      }, 45000)
+    }
+    return () => clearTimeout(timeout)
+  }, [state.isPlaying, currentSong?.youtubeId])
+
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
       <UpNextToast isVisible={isNearEnd && state.isPlaying} nextSongTitle={nextSongTitle} />
+      
+      {/* Smart Share Toast */}
+      <div className={`smart-share-toast ${showShareToast ? 'visible' : ''}`}>
+        <span>Liking this song? Share with friends!</span>
+        <button 
+          onClick={() => {
+            if (currentSong?.youtubeId) {
+              const url = new URL(window.location.href)
+              url.searchParams.set('v', currentSong.youtubeId)
+              navigator.clipboard.writeText(url.toString())
+              alert('Song link copied to clipboard!')
+            }
+          }}
+          className="smart-share-toast__btn"
+          aria-label="Share song"
+        >
+          <ShareIcon />
+        </button>
+      </div>
       
       {/* Full bleed background — responsive */}
       <picture>
@@ -86,7 +120,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Vibe title */}
       <div className="player-page__title-area">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
           <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
@@ -97,6 +131,21 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
               />
             </div>
           )}
+          <button 
+            onClick={() => {
+              if (currentSong?.youtubeId) {
+                const url = new URL(window.location.href)
+                url.searchParams.set('v', currentSong.youtubeId)
+                navigator.clipboard.writeText(url.toString())
+                alert('Song link copied to clipboard!')
+              }
+            }}
+            className="player-page__title-share"
+            aria-label="Share song"
+            title="Share Song"
+          >
+            <ShareIcon />
+          </button>
         </div>
       </div>
 
@@ -104,6 +153,9 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* YouTube hidden player (must be in viewport for iOS background playing) */}
       <div id="yt-player" style={{ position: 'absolute', top: 0, left: 0, width: '1px', height: '1px', opacity: 0.01, pointerEvents: 'none', zIndex: -1 }} />
+
+      {/* Subtle Artist Signature */}
+      <div className="artist-signature">smaxiso</div>
 
       {/* API error state */}
       {apiError && (

@@ -1,6 +1,6 @@
 import { Song, RepeatMode } from '../types'
 import { formatTime } from '../utils/format'
-import { PlayIcon, PauseIcon, NextIcon, PrevIcon, ShuffleIcon, RepeatIcon, RepeatOneIcon, PlaylistIcon, VolumeIcon, ShareIcon } from './Icons'
+import { PlayIcon, PauseIcon, NextIcon, PrevIcon, ShuffleIcon, RepeatIcon, RepeatOneIcon, PlaylistIcon, VolumeIcon } from './Icons'
 import Marquee from './Marquee'
 
 interface PlayerBarProps {
@@ -112,20 +112,6 @@ export default function PlayerBar({
         </button>
         <button onClick={onPlaylistToggle} className="player-bar__btn-sm" aria-label="Toggle playlist">
           <PlaylistIcon />
-        </button>
-        <button 
-          onClick={() => {
-            if (currentSong?.youtubeId) {
-              const url = new URL(window.location.href)
-              url.searchParams.set('v', currentSong.youtubeId)
-              navigator.clipboard.writeText(url.toString())
-              alert('Song link copied to clipboard!')
-            }
-          }} 
-          className="player-bar__btn-sm" 
-          aria-label="Share song"
-        >
-          <ShareIcon />
         </button>
         <div className="player-bar__vol-group">
           <VolumeIcon size={14} />
