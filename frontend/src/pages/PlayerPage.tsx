@@ -175,8 +175,8 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       {/* YouTube hidden player (must be in viewport for iOS background playing) */}
       <div id="yt-player" style={{ position: 'absolute', top: 0, left: 0, width: '1px', height: '1px', opacity: 0.01, pointerEvents: 'none', zIndex: -1 }} />
 
-      {/* Subtle Artist Signature */}
-      <div className="artist-signature">smaxiso</div>
+      {/* Subtle signature */}
+      <a href="https://smaxiso.web.app" target="_blank" rel="noopener noreferrer" className="artist-signature">smaxiso</a>
 
       {/* API error state */}
       {apiError && (
