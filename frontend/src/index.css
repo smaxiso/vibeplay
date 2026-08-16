@@ -796,8 +796,16 @@ body {
   flex-shrink: 0;
 }
 
+@keyframes dynamicRgbGlow {
+  0% { border-color: rgba(255, 0, 0, 0.8); box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+  33% { border-color: rgba(0, 255, 0, 0.8); box-shadow: 0 0 25px rgba(0, 255, 0, 0.6); }
+  66% { border-color: rgba(0, 150, 255, 0.8); box-shadow: 0 0 25px rgba(0, 150, 255, 0.6); }
+  100% { border-color: rgba(255, 0, 255, 0.8); box-shadow: 0 0 25px rgba(255, 0, 255, 0.6); }
+}
+
 .spinning-disc.is-playing {
   animation-play-state: running;
+  animation: spin 8s linear infinite, dynamicRgbGlow 6s linear infinite alternate;
 }
 
 .spinning-disc::after {

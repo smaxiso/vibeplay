@@ -41,6 +41,16 @@ export function useVibePlayer(vibe: Vibe) {
     fetchPlaylistItems(vibe.playlistId).then(items => {
       if (items.length > 0) {
         setSongs(items)
+        
+        // Handle shareable URL logic
+        const params = new URLSearchParams(window.location.search)
+        const sharedVideoId = params.get('v')
+        if (sharedVideoId) {
+          const index = items.findIndex(s => s.youtubeId === sharedVideoId)
+          if (index !== -1) {
+            dispatch({ type: 'SELECT_TRACK', payload: index })
+          }
+        }
       } else {
         // All proxies failed (returned []) — fall back to IFrame playlist mode silently
         setUsePlaylistFallback(true)
