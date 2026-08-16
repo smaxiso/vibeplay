@@ -39,7 +39,9 @@ export default function PlayerBar({
   const isActuallyLoading = isLoading || !currentSong.youtubeId || currentSong.title === 'Loading...'
 
   return (
-    <div className="player-bar">
+    <div className={`player-bar-container ${isPlaying ? 'is-playing' : ''}`}>
+      <div className="player-bar__neon-flow" />
+      <div className="player-bar">
       {/* Row 1: Thumbnail + Song info + Main controls */}
       <div className="player-bar__row">
         <div className="player-bar__thumb-wrap">
@@ -122,6 +124,7 @@ export default function PlayerBar({
             aria-label="Volume"
           />
         </div>
+      </div>
       </div>
     </div>
   )

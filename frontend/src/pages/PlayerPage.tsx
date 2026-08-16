@@ -65,7 +65,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Vibe title */}
       <div className="player-page__title-area">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center' }}>
           <h1 className="player-page__vibe-title">{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
