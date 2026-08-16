@@ -151,7 +151,15 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
+  background-size: 300% 300%;
+  animation: blobBackground 20s ease infinite;
+}
+
+@keyframes blobBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Subtle glow behind the player bar so glass has something to blur */
@@ -398,9 +406,32 @@ body {
   display: block;
   font-weight: 600;
   font-size: 0.9rem;
-  white-space: nowrap;
+}
+
+/* Marquee */
+.marquee-container {
   overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  width: 100%;
+}
+.marquee-container.is-overflowing {
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+}
+.is-overflowing .marquee-content {
+  animation: marquee 15s linear infinite;
+}
+.marquee-text {
+  display: inline-block;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .player-bar__artist {
@@ -824,4 +855,48 @@ body {
   .player-bar__vol-group {
     display: none !important;
   }
+}
+
+/* Up Next Toast */
+.up-next-toast {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+  z-index: 100;
+  max-width: 300px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.up-next-toast.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.up-next-toast__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.up-next-toast__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

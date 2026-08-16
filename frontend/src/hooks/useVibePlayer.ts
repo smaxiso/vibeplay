@@ -18,6 +18,7 @@ export function useVibePlayer(vibe: Vibe) {
   const errorCountRef = useRef(0)
   const lastErrorTimeRef = useRef(0)
   const intendedPlayingRef = useRef(state.isPlaying)
+  const fadeIntervalRef = useRef<number | null>(null)
 
   useEffect(() => {
     intendedPlayingRef.current = state.isPlaying
@@ -181,10 +182,29 @@ export function useVibePlayer(vibe: Vibe) {
     if (!playerReady.current) return
     const p = playerRef.current
     if (!p) return
+
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current)
+      fadeIntervalRef.current = null
+    }
+
     if (state.isPlaying) {
+      p.setVolume(state.volume)
       p.playVideo()
     } else {
-      p.pauseVideo()
+      let currentVol = (p as any).getVolume()
+      const step = currentVol / 15
+      fadeIntervalRef.current = window.setInterval(() => {
+        currentVol -= step
+        if (currentVol <= 0) {
+          clearInterval(fadeIntervalRef.current!)
+          fadeIntervalRef.current = null
+          p.pauseVideo()
+          p.setVolume(state.volume)
+        } else {
+          p.setVolume(currentVol)
+        }
+      }, 20)
     }
   }, [state.isPlaying])
 
@@ -195,7 +215,12 @@ export function useVibePlayer(vibe: Vibe) {
     if (!p) return
     const song = songs[state.trackIndex]
     if (song) {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current)
+        fadeIntervalRef.current = null
+      }
       p.loadVideoById(song.youtubeId)
+      p.setVolume(state.volume)
       // loadVideoById auto-plays, so ensure state reflects that
       if (!state.isPlaying) {
         dispatch({ type: 'PLAY' })
@@ -240,6 +265,29 @@ export function useVibePlayer(vibe: Vibe) {
     dispatch({ type: 'SEEK', payload: seconds })
   }, [])
 
+  const fadeAudio = useCallback((onComplete: () => void) => {
+    const p = playerRef.current
+    if (!p || !state.isPlaying) {
+      onComplete()
+      return
+    }
+    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current)
+
+    let currentVol = (p as any).getVolume()
+    const step = currentVol / 15
+    fadeIntervalRef.current = window.setInterval(() => {
+      currentVol -= step
+      if (currentVol <= 0) {
+        clearInterval(fadeIntervalRef.current!)
+        fadeIntervalRef.current = null
+        p.setVolume(0)
+        onComplete()
+      } else {
+        p.setVolume(currentVol)
+      }
+    }, 20)
+  }, [state.isPlaying])
+
   // Direct play/pause for mobile Safari (must be synchronous with click)
   const play = useCallback(() => {
     playerRef.current?.playVideo()
@@ -247,13 +295,17 @@ export function useVibePlayer(vibe: Vibe) {
   }, [])
 
   const pause = useCallback(() => {
-    playerRef.current?.pauseVideo()
-    dispatch({ type: 'PAUSE' })
+    dispatch({ type: 'PAUSE' }) // the useEffect will handle fading
   }, [])
 
-  // Next / Prev / Shuffle — simple dispatches
-  const next = useCallback(() => dispatch({ type: 'NEXT' }), [])
-  const prev = useCallback(() => dispatch({ type: 'PREV' }), [])
+  // Next / Prev / Shuffle
+  const next = useCallback(() => {
+    fadeAudio(() => dispatch({ type: 'NEXT' }))
+  }, [fadeAudio])
+  
+  const prev = useCallback(() => {
+    fadeAudio(() => dispatch({ type: 'PREV' }))
+  }, [fadeAudio])
   const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE' }), [])
 
   // Current song

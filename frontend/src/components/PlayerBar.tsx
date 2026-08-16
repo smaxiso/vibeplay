@@ -1,6 +1,7 @@
 import { Song, RepeatMode } from '../types'
 import { formatTime } from '../utils/format'
 import { PlayIcon, PauseIcon, NextIcon, PrevIcon, ShuffleIcon, RepeatIcon, RepeatOneIcon, PlaylistIcon, VolumeIcon } from './Icons'
+import Marquee from './Marquee'
 
 interface PlayerBarProps {
   currentSong: Song | null
@@ -67,7 +68,7 @@ export default function PlayerBar({
             </div>
           ) : (
             <>
-              <span className="player-bar__title">{currentSong.title}</span>
+              <Marquee text={currentSong.title} className="player-bar__title" />
               <span className="player-bar__artist">{currentSong.artist}</span>
             </>
           )}

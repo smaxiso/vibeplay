@@ -22,14 +22,35 @@ export default function PlayerPage() {
   return <PlayerPageInner vibe={vibe} />
 }
 
+import UpNextToast from '../components/UpNextToast'
+import { computeNextIndex } from '../hooks/playerReducer'
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
+
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
   const currentSong = getCurrentSong()
   const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
 
+  const handleMuteToggle = () => {
+    dispatch({ type: 'SET_VOLUME', payload: state.volume > 0 ? 0 : 80 })
+  }
+
+  useKeyboardShortcuts({
+    onPlayPause: () => dispatch({ type: state.isPlaying ? 'PAUSE' : 'PLAY' }),
+    onNext: next,
+    onPrev: prev,
+    onMuteToggle: handleMuteToggle
+  })
+
+  // Toast logic
+  const isNearEnd = state.duration > 0 && state.duration - state.currentTime <= 10
+  const nextTrackIndex = computeNextIndex(state, songs.length || 1)
+  const nextSongTitle = songs[nextTrackIndex]?.title || ''
 
   return (
     <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
+      <UpNextToast isVisible={isNearEnd && state.isPlaying} nextSongTitle={nextSongTitle} />
+      
       {/* Full bleed background — responsive */}
       <picture>
         {vibe.bgImageMobile && (
