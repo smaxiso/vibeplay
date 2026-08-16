@@ -587,3 +587,76 @@ body {
   .index-header__glass { padding: 1rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
   .index-header__title { font-size: 2rem; }
 }
+
+/* ─── Ambient Glow & Vignette ─── */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at center, var(--accent) 0%, transparent 60%);
+  opacity: 0;
+  mix-blend-mode: overlay;
+  transition: opacity 1s ease-in-out;
+}
+
+.ambient-glow.is-playing {
+  animation: pulse-glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-glow {
+  0% { opacity: 0.1; transform: scale(1); }
+  100% { opacity: 0.35; transform: scale(1.1); }
+}
+
+.vignette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+/* ─── Equalizer Visualizer ─── */
+.equalizer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  height: 20px;
+  width: 20px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  margin-left: auto;
+}
+
+.equalizer.visible {
+  opacity: 1;
+}
+
+.equalizer__bar {
+  flex: 1;
+  width: 3px;
+  background-color: var(--accent);
+  border-radius: 2px;
+  transform-origin: bottom;
+  animation-name: equalize;
+  animation-duration: 0.6s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-play-state: paused;
+}
+
+.equalizer.is-playing .equalizer__bar {
+  animation-play-state: running;
+}
+
+.equalizer__bar:nth-child(1) { height: 40%; animation-delay: -0.2s; }
+.equalizer__bar:nth-child(2) { height: 100%; animation-delay: -0.5s; }
+.equalizer__bar:nth-child(3) { height: 60%; animation-delay: -0.1s; }
+.equalizer__bar:nth-child(4) { height: 80%; animation-delay: -0.3s; }
+
+@keyframes equalize {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}

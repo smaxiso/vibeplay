@@ -42,6 +42,10 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
         />
       </picture>
+      
+      {/* Ambient Glow & Vignette */}
+      <div className={`ambient-glow ${state.isPlaying ? 'is-playing' : ''}`} />
+      <div className="vignette-overlay" />
 
       {/* Top bar */}
       <div className="player-page__topbar">

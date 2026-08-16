@@ -66,7 +66,15 @@ export default function PlayerBar({
           ) : (
             <>
               <span className="player-bar__title">{currentSong.title}</span>
-              <span className="player-bar__artist">{currentSong.artist}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="player-bar__artist">{currentSong.artist}</span>
+                <div className={`equalizer visible ${isPlaying ? 'is-playing' : ''}`}>
+                  <div className="equalizer__bar"></div>
+                  <div className="equalizer__bar"></div>
+                  <div className="equalizer__bar"></div>
+                  <div className="equalizer__bar"></div>
+                </div>
+              </div>
             </>
           )}
         </div>
