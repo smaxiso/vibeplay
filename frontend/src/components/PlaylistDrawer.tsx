@@ -19,7 +19,15 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
       </div>
       {songs.length === 0 ? (
         <div className="playlist-drawer__empty">
-          <p>Loading playlist tracks...</p>
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <div key={i} className="playlist-drawer__item" style={{ pointerEvents: 'none' }}>
+              <div className="skeleton-thumb" style={{ width: '40px', height: '40px', borderRadius: '4px', flexShrink: 0 }}></div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div className="skeleton-line skeleton-title" style={{ width: '80%' }}></div>
+                <div className="skeleton-line skeleton-artist" style={{ width: '50%' }}></div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <ul className="playlist-drawer__list">

@@ -8,7 +8,7 @@ const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 export default function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div className="loading">Loading...</div>}>
+      <Suspense fallback={<div className="app-loader"><div className="spinner"></div></div>}>
         <Routes>
           <Route path="/" element={<IndexPage />} />
           <Route path="/vibe/:slug" element={<PlayerPage />} />
