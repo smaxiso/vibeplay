@@ -265,12 +265,16 @@ export function useVibePlayer(vibe: Vibe) {
           
           dispatch({ type: 'TIME_UPDATE', payload: { current, duration } })
 
+          // Clear transitioning flag when a new video actually starts (time is far from the end)
+          if (duration > 0 && (duration - current) > 2) {
+            isTransitioningRef.current = false
+          }
+
           // Robust workaround: If we are extremely close to the end (within 1 second)
           // manually trigger TRACK_ENDED to avoid ad-blocker freezing bugs on YouTube API
           if (duration > 0 && (duration - current) < 1 && !isTransitioningRef.current) {
             isTransitioningRef.current = true
             dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
-            setTimeout(() => { isTransitioningRef.current = false }, 3000) // debounce
           }
         }
       }, 1000)
