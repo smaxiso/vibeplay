@@ -114,32 +114,18 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       {/* Top bar */}
       <div className="player-page__topbar">
         <Link to="/" className="player-page__back" aria-label="Back to vibes">← Vibes</Link>
-        <a
-          href={youtubeUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="player-page__source-link"
-          aria-label="Open on YouTube"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
-          </svg>
-        </a>
-      </div>
-
-      {/* Vibe title */}
-      <div className="player-page__title-area">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
-          <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
-          {currentSong?.youtubeId && (
-            <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
-              <img 
-                src={currentSong.thumbnail || `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`} 
-                alt="Album Art" 
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-              />
-            </div>
-          )}
+        <div className="player-page__top-actions" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <a
+            href={youtubeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="player-page__source-link"
+            aria-label="Open on YouTube"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/>
+            </svg>
+          </a>
           <button 
             onClick={() => {
               if (currentSong?.youtubeId) {
@@ -158,12 +144,29 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
                 }
               }
             }}
-            className="player-page__title-share"
+            className="player-page__source-link"
+            style={{ border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             aria-label="Share song"
             title="Share Song"
           >
             <ShareIcon />
           </button>
+        </div>
+      </div>
+
+      {/* Vibe title */}
+      <div className="player-page__title-area">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
+          <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
+          {currentSong?.youtubeId && (
+            <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
+              <img 
+                src={currentSong.thumbnail || `https://img.youtube.com/vi/${currentSong.youtubeId}/0.jpg`} 
+                alt="Album Art" 
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+              />
+            </div>
+          )}
         </div>
       </div>
 

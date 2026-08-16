@@ -192,44 +192,58 @@ body {
   top: -100px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(25, 25, 30, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 0.75rem 1.25rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  background: rgba(20, 20, 25, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
   z-index: 1000;
   color: var(--text);
   font-weight: 500;
   font-size: 0.9rem;
-  transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  letter-spacing: 0.3px;
+  transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
 }
 
 .smart-share-toast.visible {
   top: 1.5rem;
 }
 
+.smart-share-toast span {
+  opacity: 0.9;
+}
+
 .smart-share-toast__btn {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), #ff007f);
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  flex-grow: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   cursor: pointer;
-  box-shadow: 0 0 15px var(--accent);
-  animation: pulse-glow-btn 2s infinite alternate;
+  box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
+  animation: pulse-glow-btn 2.5s infinite alternate ease-in-out;
+  transition: transform 0.2s;
+}
+
+.smart-share-toast__btn:active {
+  transform: scale(0.95) !important;
 }
 
 @keyframes pulse-glow-btn {
-  0% { transform: scale(1); box-shadow: 0 0 10px var(--accent); }
-  100% { transform: scale(1.1); box-shadow: 0 0 20px var(--accent); }
+  0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 0, 127, 0.3); }
+  100% { transform: scale(1.08); box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); }
 }
 
 .player-page__title-share {
