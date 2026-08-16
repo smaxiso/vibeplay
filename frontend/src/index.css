@@ -819,3 +819,9 @@ body {
   from { transform: translate(-50%, -150%); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
 }
+
+@media (pointer: coarse) {
+  .player-bar__vol-group {
+    display: none !important;
+  }
+}

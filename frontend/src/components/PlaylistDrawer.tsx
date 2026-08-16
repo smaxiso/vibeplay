@@ -28,7 +28,12 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
               key={`${song.youtubeId}-${index}`}
               className={`playlist-drawer__item ${index === currentIndex ? 'active' : ''}`}
               onClick={() => onSelect(index)}
-              onKeyDown={(e) => { if (e.key === 'Enter') onSelect(index) }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  onSelect(index)
+                }
+              }}
               tabIndex={0}
               role="button"
               aria-label={`Play ${song.title || `Track ${index + 1}`}`}

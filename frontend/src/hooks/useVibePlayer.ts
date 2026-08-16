@@ -15,6 +15,8 @@ export function useVibePlayer(vibe: Vibe) {
   const playerRef = useRef<YT.Player | null>(null)
   const intervalRef = useRef<number | null>(null)
   const playerReady = useRef(false)
+  const errorCountRef = useRef(0)
+  const lastErrorTimeRef = useRef(0)
 
   // Fetch playlist tracks — try Piped API first, fallback to IFrame playlist
   useEffect(() => {
@@ -119,6 +121,21 @@ export function useVibePlayer(vibe: Vibe) {
               }
             },
             onError: () => {
+              const now = Date.now()
+              if (now - lastErrorTimeRef.current < 2000) {
+                errorCountRef.current += 1
+              } else {
+                errorCountRef.current = 1
+              }
+              lastErrorTimeRef.current = now
+
+              if (errorCountRef.current > 3) {
+                console.error("Too many consecutive playback errors. Pausing playback.")
+                dispatch({ type: 'PAUSE' })
+                setApiError(true)
+                return
+              }
+              
               dispatch({ type: 'NEXT' })
             },
           },
