@@ -16,13 +16,15 @@ export function generateShuffleOrder(currentIndex: number, totalTracks: number):
 }
 
 export function computeNextIndex(state: PlayerState, totalTracks: number): number {
-  if (state.shuffle) {
+  if (state.shuffle && state.shuffleOrder.length > 0) {
     const currentShufflePos = state.shuffleOrder.indexOf(state.trackIndex)
-    const nextShufflePos = currentShufflePos + 1
-    if (nextShufflePos >= totalTracks) {
-      return state.repeat === 'off' ? state.trackIndex : state.shuffleOrder[0]
+    if (currentShufflePos !== -1) {
+      const nextShufflePos = currentShufflePos + 1
+      if (nextShufflePos >= state.shuffleOrder.length) {
+        return state.repeat === 'off' ? state.trackIndex : state.shuffleOrder[0]
+      }
+      return state.shuffleOrder[nextShufflePos]
     }
-    return state.shuffleOrder[nextShufflePos]
   }
   const next = state.trackIndex + 1
   if (next >= totalTracks) {
@@ -32,11 +34,13 @@ export function computeNextIndex(state: PlayerState, totalTracks: number): numbe
 }
 
 export function computePrevIndex(state: PlayerState, totalTracks: number): number {
-  if (state.shuffle) {
+  if (state.shuffle && state.shuffleOrder.length > 0) {
     const currentShufflePos = state.shuffleOrder.indexOf(state.trackIndex)
-    return currentShufflePos > 0
-      ? state.shuffleOrder[currentShufflePos - 1]
-      : state.shuffleOrder[totalTracks - 1]
+    if (currentShufflePos !== -1) {
+      return currentShufflePos > 0
+        ? state.shuffleOrder[currentShufflePos - 1]
+        : state.shuffleOrder[state.shuffleOrder.length - 1]
+    }
   }
   return state.trackIndex > 0 ? state.trackIndex - 1 : totalTracks - 1
 }
@@ -68,7 +72,6 @@ export function createPlayerReducer() {
 
       case 'NEXT': {
         const nextIndex = computeNextIndex(state, action.payload)
-        console.log('[playerReducer] NEXT action. Payload:', action.payload, 'New index:', nextIndex)
         return { ...state, trackIndex: nextIndex, isPlaying: true, currentTime: 0 }
       }
 
@@ -110,6 +113,12 @@ export function createPlayerReducer() {
 
       case 'TOGGLE_DRAWER':
         return { ...state, isDrawerOpen: !state.isDrawerOpen }
+
+      case 'SYNC_TRACKS':
+        if (state.shuffle && state.shuffleOrder.length !== action.payload) {
+          return { ...state, shuffleOrder: generateShuffleOrder(state.trackIndex, action.payload) }
+        }
+        return state
 
       default:
         return state

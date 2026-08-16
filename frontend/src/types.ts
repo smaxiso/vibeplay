@@ -45,3 +45,4 @@ export type PlayerAction =
   | { type: 'TIME_UPDATE'; payload: { current: number; duration: number } }
   | { type: 'TRACK_ENDED'; payload: number }
   | { type: 'TOGGLE_DRAWER' }
+  | { type: 'SYNC_TRACKS'; payload: number }
