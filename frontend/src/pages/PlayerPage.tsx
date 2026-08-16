@@ -87,7 +87,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       {/* Vibe title */}
       <div className="player-page__title-area">
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center' }}>
-          <h1 className="player-page__vibe-title">{vibe.name}</h1>
+          <h1 className={`player-page__vibe-title ${vibe.name === 'YoYo BT Era' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
               <img 

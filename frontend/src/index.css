@@ -44,6 +44,31 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+/* ─── Holographic Text Effect ─── */
+.holographic-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900 !important;
+  background: linear-gradient(
+    90deg,
+    #00ffcc,
+    #ff00ff,
+    #3366ff,
+    #00ffcc
+  );
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holoText 5s linear infinite;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@keyframes holoText {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 /* ─── Index Page ─── */
 .index-page {
   position: relative;
