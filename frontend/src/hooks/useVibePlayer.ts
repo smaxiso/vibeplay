@@ -330,12 +330,12 @@ export function useVibePlayer(vibe: Vibe) {
 
   // Next / Prev / Shuffle
   const next = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'NEXT', payload: totalTracksRef.current }))
-  }, [fadeAudio])
+    dispatch({ type: 'NEXT', payload: totalTracksRef.current })
+  }, [])
   
   const prev = useCallback(() => {
-    fadeAudio(() => dispatch({ type: 'PREV', payload: totalTracksRef.current }))
-  }, [fadeAudio])
+    dispatch({ type: 'PREV', payload: totalTracksRef.current })
+  }, [])
   
   const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE', payload: totalTracksRef.current }), [])
 

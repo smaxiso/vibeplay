@@ -7,10 +7,9 @@ interface VibeCardProps {
   bgImage: string
   color: string
   songCount: number
-  isPlaylist?: boolean
 }
 
-export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCount, isPlaylist }: VibeCardProps) {
+export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCount }: VibeCardProps) {
   return (
     <Link to={`/vibe/${slug}`} className="vibe-card" style={{ '--accent': color } as React.CSSProperties}>
       <img

@@ -37,7 +37,6 @@ export default function IndexPage() {
             bgImage={vibe.bgImage}
             color={vibe.color}
             songCount={vibe.songs.length}
-            isPlaylist={!!vibe.playlistId}
           />
         ))}
         {/* Coming soon card */}
