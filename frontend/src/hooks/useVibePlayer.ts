@@ -1,13 +1,13 @@
 import { useReducer, useRef, useEffect, useCallback, useState } from 'react'
 import { Vibe, Song } from '../types'
 import { createPlayerReducer, initialPlayerState, computeNextIndex } from './playerReducer'
-import { loadYouTubeAPI, fetchPlaylistItems } from '../utils/youtube'
+import { loadYouTubeAPI } from '../utils/youtube'
 
 export function useVibePlayer(vibe: Vibe) {
   const [songs, setSongs] = useState<Song[]>(vibe.songs)
-  const [isLoading, setIsLoading] = useState(!!vibe.playlistId)
+  const isLoading = false
   const [apiError, setApiError] = useState(false)
-  const [usePlaylistFallback, setUsePlaylistFallback] = useState(false)
+  const usePlaylistFallback = false
 
   const reducer = useCallback(createPlayerReducer(), [])
   const [state, dispatch] = useReducer(reducer, initialPlayerState)
@@ -44,30 +44,17 @@ export function useVibePlayer(vibe: Vibe) {
     }))
   }, [state.trackIndex, state.volume, state.shuffle, state.repeat])
 
-  // Fetch playlist tracks — try Piped API first, fallback to IFrame playlist
   useEffect(() => {
-    if (!vibe.playlistId) return
-
-    fetchPlaylistItems(vibe.playlistId).then(items => {
-      if (items.length > 0) {
-        setSongs(items)
-        
-        // Handle shareable URL logic
-        const params = new URLSearchParams(window.location.search)
-        const sharedVideoId = params.get('v')
-        if (sharedVideoId) {
-          const index = items.findIndex(s => s.youtubeId === sharedVideoId)
-          if (index !== -1) {
-            dispatch({ type: 'SELECT_TRACK', payload: index })
-          }
-        }
-      } else {
-        // All proxies failed (returned []) — fall back to IFrame playlist mode silently
-        setUsePlaylistFallback(true)
+    // Handle shareable URL logic
+    const params = new URLSearchParams(window.location.search)
+    const sharedVideoId = params.get('v')
+    if (sharedVideoId) {
+      const index = songs.findIndex(s => s.youtubeId === sharedVideoId)
+      if (index !== -1) {
+        dispatch({ type: 'SELECT_TRACK', payload: index })
       }
-      setIsLoading(false)
-    })
-  }, [vibe.playlistId])
+    }
+  }, [])
 
   // Load YouTube IFrame API and create player
   useEffect(() => {

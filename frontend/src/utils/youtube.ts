@@ -16,49 +16,4 @@ export function loadYouTubeAPI(): Promise<void> {
   return apiLoadPromise
 }
 
-// YouTube Data API v3 — fetch playlist items (free, 10k units/day)
-// (Replaced by Piped API InnerTube Proxy)
 
-interface PlaylistItem {
-  title: string
-  artist: string
-  youtubeId: string
-  duration: string
-  thumbnail: string
-}
-
-const playlistCache: Record<string, PlaylistItem[]> = {}
-
-export async function fetchPlaylistItems(playlistId: string): Promise<PlaylistItem[]> {
-  if (playlistCache[playlistId]) {
-    return playlistCache[playlistId]
-  }
-
-  const PROD_BACKENDS = [
-    'https://vibeplay-api.onrender.com',
-    'https://vibeplay-api.vercel.app'
-  ]
-
-  // In development, prioritize localhost. In production, prioritize Vercel/Render.
-  const BACKEND_URLS = import.meta.env.DEV 
-    ? ['http://localhost:3001', ...PROD_BACKENDS]
-    : [...PROD_BACKENDS, 'http://localhost:3001']
-
-  for (const baseUrl of BACKEND_URLS) {
-    try {
-      const res = await fetch(`${baseUrl}/api/playlist/${playlistId}`)
-      if (res.ok) {
-        const data = await res.json()
-        if (data.items) {
-          playlistCache[playlistId] = data.items
-          return data.items
-        }
-      }
-    } catch (err) {
-      console.warn(`Failed to fetch from ${baseUrl}, trying next fallback...`)
-    }
-  }
-
-  console.error('All backend API fallbacks failed.')
-  return []
-}
