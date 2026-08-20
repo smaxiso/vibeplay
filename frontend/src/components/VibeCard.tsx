@@ -35,6 +35,11 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
             <path d="M8 5v14l11-7z" />
           </svg>
         </div>
+        <div className="vibe-card__mobile-play">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
         <h2 className={`vibe-card__title ${name === 'Yo Yo' ? 'holographic-text' : ''}`}>{name}</h2>
         {songCount > 0 && (
           <span className="vibe-card__count">
