@@ -1,14 +1,30 @@
+import { useRef, useEffect } from 'react'
 import { Song } from '../types'
 
 interface PlaylistDrawerProps {
   songs: Song[]
   currentIndex: number
   isOpen: boolean
+  isPlaying: boolean
   onSelect: (index: number) => void
   onClose: () => void
 }
 
-export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, onClose }: PlaylistDrawerProps) {
+export default function PlaylistDrawer({ songs, currentIndex, isOpen, isPlaying, onSelect, onClose }: PlaylistDrawerProps) {
+  const listRef = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    if (isOpen && listRef.current) {
+      const activeEl = listRef.current.querySelector('.playlist-drawer__item.active') as HTMLElement
+      if (activeEl) {
+        // Scroll active element into center of drawer
+        // Use a small timeout to ensure the drawer is fully visible before scrolling
+        setTimeout(() => {
+          activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 50)
+      }
+    }
+  }, [isOpen, currentIndex])
   return (
     <div className={`playlist-drawer ${isOpen ? 'open' : ''}`}>
       <div className="playlist-drawer__header">
@@ -30,7 +46,7 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
           ))}
         </div>
       ) : (
-        <ul className="playlist-drawer__list">
+        <ul className="playlist-drawer__list" ref={listRef}>
           {songs.map((song, index) => (
             <li
               key={`${song.youtubeId}-${index}`}
@@ -46,7 +62,13 @@ export default function PlaylistDrawer({ songs, currentIndex, isOpen, onSelect, 
               role="button"
               aria-label={`Play ${song.title || `Track ${index + 1}`}`}
             >
-              <span className="playlist-drawer__num">{index === currentIndex ? '\u25B6' : index + 1}</span>
+              <span className="playlist-drawer__num">
+                {index === currentIndex ? (
+                  <div className={`mini-eq ${isPlaying ? 'playing' : ''}`}>
+                    <span></span><span></span><span></span>
+                  </div>
+                ) : index + 1}
+              </span>
               {song.youtubeId && (
                 <img
                   src={`https://img.youtube.com/vi/${song.youtubeId}/default.jpg`}

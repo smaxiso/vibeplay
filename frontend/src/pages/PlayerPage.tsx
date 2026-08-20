@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import vibes from '../data/vibes.json'
 import { Vibe } from '../types'
 import { useVibePlayer } from '../hooks/useVibePlayer'
 import PlayerBar from '../components/PlayerBar'
 import PlaylistDrawer from '../components/PlaylistDrawer'
+import { triggerHaptic } from '../utils/haptics'
+import { getAverageColor } from '../utils/color'
 
 export default function PlayerPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -30,24 +32,71 @@ import { ShareIcon, VolumeIcon } from '../components/Icons'
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
+  const [volumeOpen, setVolumeOpen] = useState(false)
+  const [ambientColor, setAmbientColor] = useState(vibe.color || '#00ffcc')
   const currentSong = getCurrentSong()
   const youtubeUrl = currentSong?.youtubeId ? `https://www.youtube.com/watch?v=${currentSong.youtubeId}` : '#'
+
+  useEffect(() => {
+    if (currentSong?.youtubeId) {
+      const thumbUrl = `https://img.youtube.com/vi/${currentSong.youtubeId}/default.jpg`
+      getAverageColor(thumbUrl).then(color => setAmbientColor(color))
+    }
+  }, [currentSong?.youtubeId])
 
   const handleMuteToggle = () => {
     dispatch({ type: 'SET_VOLUME', payload: state.volume > 0 ? 0 : 80 })
   }
 
   useKeyboardShortcuts({
-    onPlayPause: () => dispatch({ type: state.isPlaying ? 'PAUSE' : 'PLAY' }),
+    onPlayPause: () => {
+      triggerHaptic()
+      dispatch({ type: state.isPlaying ? 'PAUSE' : 'PLAY' })
+    },
     onNext: next,
     onPrev: prev,
     onMuteToggle: handleMuteToggle
   })
 
+  // Swipe Gestures
+  const touchStartX = useRef<number | null>(null)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return
+    const touchEndX = e.changedTouches[0].clientX
+    const deltaX = touchStartX.current - touchEndX
+
+    if (deltaX > 50) {
+      next() // Swipe left -> next
+    } else if (deltaX < -50) {
+      prev() // Swipe right -> prev
+    }
+    touchStartX.current = null
+  }
+
   // Toast logic
   const isNearEnd = state.duration > 0 && state.duration - state.currentTime <= 10
   const nextTrackIndex = computeNextIndex(state, songs.length || 1)
   const nextSongTitle = songs[nextTrackIndex]?.title || ''
+
+  // Close volume popover when tapping elsewhere
+  useEffect(() => {
+    if (!volumeOpen) return
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest('.player-page__volume-container')) {
+        setVolumeOpen(false)
+      }
+    }
+    document.addEventListener('click', handleClickOutside)
+    document.addEventListener('touchstart', handleClickOutside)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
+    }
+  }, [volumeOpen])
 
   // Smart Share Toast Logic
   const [showShareToast, setShowShareToast] = useState(false)
@@ -63,7 +112,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
   }, [state.isPlaying, currentSong?.youtubeId])
 
   return (
-    <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>
+    <div className="player-page" style={{ '--accent': ambientColor } as React.CSSProperties}>
       <UpNextToast isVisible={isNearEnd && state.isPlaying} nextSongTitle={nextSongTitle} />
       
       {/* Smart Share Toast */}
@@ -155,12 +204,18 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           >
             <ShareIcon />
           </button>
-          <div className="player-page__volume-container">
+          <div className={`player-page__volume-container ${volumeOpen ? 'is-open' : ''}`}>
             <button 
               className="player-page__source-link" 
-              onClick={handleMuteToggle}
+              onClick={() => {
+                if (volumeOpen) {
+                  handleMuteToggle()
+                } else {
+                  setVolumeOpen(true)
+                }
+              }}
               style={{ border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              aria-label="Toggle Mute"
+              aria-label={volumeOpen ? 'Toggle Mute' : 'Show Volume'}
               title="Volume"
             >
               <VolumeIcon size={20} />
@@ -182,9 +237,13 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
       </div>
 
       {/* Vibe title */}
-      <div className="player-page__title-area">
+      <div 
+        className="player-page__title-area" 
+        onTouchStart={handleTouchStart} 
+        onTouchEnd={handleTouchEnd}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'nowrap', justifyContent: 'center', position: 'relative' }}>
-          <h1 className={`player-page__vibe-title ${vibe.name === 'Yo Yo' ? 'holographic-text' : ''}`}>{vibe.name}</h1>
+          <h1 className={`player-page__vibe-title ${vibe.name === 'Yo Yo' ? `holographic-text ${state.isPlaying ? 'is-playing' : ''}` : ''}`}>{vibe.name}</h1>
           {currentSong?.youtubeId && (
             <div className={`spinning-disc-wrapper ${state.isPlaying ? 'is-playing' : ''}`}>
               <div className={`spinning-disc ${state.isPlaying ? 'is-playing' : ''}`}>
@@ -247,6 +306,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
         songs={songs}
         currentIndex={state.trackIndex}
         isOpen={state.isDrawerOpen}
+        isPlaying={state.isPlaying}
         onSelect={(i) => {
           if (vibe.playlistId) {
             const p = playerRef.current as any

@@ -1,6 +1,7 @@
 import { useReducer, useRef, useEffect, useCallback, useState } from 'react'
 import { Vibe, Song } from '../types'
 import { createPlayerReducer, initialPlayerState, computeNextIndex } from './playerReducer'
+import { triggerHaptic } from '../utils/haptics'
 import { loadYouTubeAPI } from '../utils/youtube'
 
 export function useVibePlayer(vibe: Vibe) {
@@ -18,6 +19,7 @@ export function useVibePlayer(vibe: Vibe) {
   const lastErrorTimeRef = useRef(0)
   const intendedPlayingRef = useRef(state.isPlaying)
   const totalTracksRef = useRef(songs.length || 1)
+  const trackTransitionRef = useRef(false)
   
   const stateRef = useRef(state)
   const songsRef = useRef(songs)
@@ -133,6 +135,7 @@ export function useVibePlayer(vibe: Vibe) {
                 // Synchronous track change for mobile browsers!
                 // We MUST call playVideo/loadVideoById immediately in this callback 
                 // so the browser recognizes the media playback as a continuation.
+                trackTransitionRef.current = true
                 const currentState = stateRef.current
                 const currentSongs = songsRef.current
                 
@@ -149,9 +152,13 @@ export function useVibePlayer(vibe: Vibe) {
                 
                 dispatch({ type: 'TRACK_ENDED', payload: totalTracksRef.current })
               } else if (event.data === YT.PlayerState.PAUSED) {
+                // Ignore PAUSED events during track transitions — YouTube fires
+                // PAUSED briefly when a video ends before the next one loads
+                if (trackTransitionRef.current) return
                 ;(window as any)._silentAudio?.pause()
                 dispatch({ type: 'PAUSE' })
               } else if (event.data === YT.PlayerState.PLAYING) {
+                trackTransitionRef.current = false
                 ;(window as any)._silentAudio?.play()
                 dispatch({ type: 'PLAY' })
               }
@@ -331,24 +338,31 @@ export function useVibePlayer(vibe: Vibe) {
 
   // Direct play/pause for mobile Safari (must be synchronous with click)
   const play = useCallback(() => {
+    triggerHaptic()
     playerRef.current?.playVideo()
     dispatch({ type: 'PLAY' })
   }, [])
 
   const pause = useCallback(() => {
+    triggerHaptic()
     fadeAudio(() => dispatch({ type: 'PAUSE' }))
   }, [fadeAudio])
 
   // Next / Prev / Shuffle
   const next = useCallback(() => {
+    triggerHaptic()
     dispatch({ type: 'NEXT', payload: totalTracksRef.current })
   }, [])
   
   const prev = useCallback(() => {
+    triggerHaptic()
     dispatch({ type: 'PREV', payload: totalTracksRef.current })
   }, [])
   
-  const toggleShuffle = useCallback(() => dispatch({ type: 'TOGGLE_SHUFFLE', payload: totalTracksRef.current }), [])
+  const toggleShuffle = useCallback(() => {
+    triggerHaptic()
+    dispatch({ type: 'TOGGLE_SHUFFLE', payload: totalTracksRef.current })
+  }, [])
 
   // Current song
   const getCurrentSong = useCallback((): Song => {
@@ -378,6 +392,27 @@ export function useVibePlayer(vibe: Vibe) {
       navigator.mediaSession.setActionHandler('nexttrack', next)
     }
   }, [play, pause, prev, next])
+
+  // Resume playback when returning to the app/tab on mobile
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && intendedPlayingRef.current) {
+        // Give the iframe a moment to wake up, then nudge it
+        setTimeout(() => {
+          const p = playerRef.current
+          if (p && typeof (p as any).getPlayerState === 'function') {
+            const ytState = (p as any).getPlayerState()
+            // If YouTube is paused/unstarted but we intended to be playing, resume
+            if (ytState === YT.PlayerState.PAUSED || ytState === YT.PlayerState.CUED || ytState === -1) {
+              p.playVideo()
+            }
+          }
+        }, 300)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
 
   return { state, dispatch, play, pause, seekTo, next, prev, shuffle: toggleShuffle, playerRef, apiError, isLoading, getCurrentSong, songs }
 }
