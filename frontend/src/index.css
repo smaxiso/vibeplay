@@ -111,6 +111,17 @@ body {
   animation: bgBreath 30s ease-in-out infinite alternate;
 }
 
+/* Subtle background overlay to fill empty space */
+.index-page__bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: 
+    linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.8) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 255, 255, 0.02) 1px, rgba(255, 255, 255, 0.02) 4px);
+  z-index: 1;
+  pointer-events: none;
+}
+
 @keyframes bgBreath {
   0% { transform: scale(1); }
   100% { transform: scale(1.08); }
@@ -196,6 +207,77 @@ body {
   }
 }
 
+/* ─── Popular Tracks Section ─── */
+.index-section {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.index-section__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.popular-tracks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popular-tracks-list__item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+@media (hover: hover) {
+  .popular-tracks-list__item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.popular-tracks-list__num {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  width: 20px;
+  text-align: center;
+}
+
+.popular-tracks-list__thumb {
+  width: 40px; height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.popular-tracks-list__meta {
+  display: flex; flex-direction: column;
+}
+
+.popular-tracks-list__title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.popular-tracks-list__artist {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 /* ─── Vibe Card ─── */
 .vibe-card {
   position: relative;
@@ -259,10 +341,6 @@ body {
       0 0 30px var(--accent),
       inset 0 0 0 1px rgba(255,255,255,0.2);
   }
-  .vibe-card:hover .vibe-card__play-icon {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
 }
 
 .vibe-card__bg {
@@ -276,56 +354,42 @@ body {
   display: flex; flex-direction: column;
   justify-content: flex-end;
   padding: 1.5rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, transparent 80%);
 }
 
-.vibe-card__play-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.5);
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+.vibe-card__text-content {
+  position: relative;
   z-index: 2;
-}
-.vibe-card__play-icon svg {
-  width: 32px;
-  height: 32px;
-  margin-left: 4px;
+  padding-right: 60px; /* Leave space for play button */
 }
 
-/* Explicit Play Button for Touch Devices */
-.vibe-card__mobile-play {
-  display: flex;
+/* Explicit Play Button for All Devices */
+.vibe-card__play-btn {
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 44px;
-  height: 44px;
+  bottom: 1.2rem;
+  right: 1.2rem;
+  width: 48px;
+  height: 48px;
   background: var(--accent);
   border-radius: 50%;
+  display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
   color: #fff;
   z-index: 2;
   border: none;
   cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.vibe-card__mobile-play svg {
-  width: 20px;
-  height: 20px;
+
+.vibe-card__play-btn:hover {
+  transform: scale(1.1);
+}
+
+.vibe-card__play-btn svg {
+  width: 24px;
+  height: 24px;
   margin-left: 3px;
 }
 
@@ -1039,10 +1103,11 @@ body {
   .player-bar { padding: 0.75rem 1rem; }
   
   /* Make header less bulky on mobile */
-  .index-page { padding: 1.5rem 1rem; }
-  .index-header { margin-bottom: 1.5rem; }
-  .index-header__glass { padding: 1rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
-  .index-header__title { font-size: 2rem; }
+  .index-page { padding: 1.5rem 0.5rem; }
+  .index-header { margin-bottom: 1rem; }
+  .index-header__glass { padding: 0.75rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
+  .index-header__title { font-size: 1.8rem; }
+  .index-header__subtitle { font-size: 0.9rem; }
 }
 
 /* ─── Ambient Glow & Vignette ─── */

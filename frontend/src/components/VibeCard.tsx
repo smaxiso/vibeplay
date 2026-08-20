@@ -30,22 +30,19 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
       />
       <div className="vibe-card__overlay">
-        <div className="vibe-card__play-icon">
+        <div className="vibe-card__text-content">
+          <h2 className={`vibe-card__title ${name === 'Yo Yo' ? 'holographic-text' : ''}`}>{name}</h2>
+          {songCount > 0 && (
+            <span className="vibe-card__count">
+              {songCount} songs
+            </span>
+          )}
+        </div>
+        <div className="vibe-card__play-btn">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M8 5v14l11-7z" />
           </svg>
         </div>
-        <div className="vibe-card__mobile-play">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </div>
-        <h2 className={`vibe-card__title ${name === 'Yo Yo' ? 'holographic-text' : ''}`}>{name}</h2>
-        {songCount > 0 && (
-          <span className="vibe-card__count">
-            {songCount} songs
-          </span>
-        )}
       </div>
     </Link>
   )

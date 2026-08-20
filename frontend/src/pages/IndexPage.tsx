@@ -4,6 +4,9 @@ import VibeCard from '../components/VibeCard'
 import { Vibe } from '../types'
 
 export default function IndexPage() {
+  const topVibe = vibes[0] as Vibe;
+  const popularTracks = topVibe ? topVibe.songs.slice(0, 4) : [];
+
   return (
     <div className="index-page">
       <picture className="index-page__bg">
@@ -39,7 +42,28 @@ export default function IndexPage() {
         </div>
       </div>
 
-      <a href="https://smaxiso.web.app" target="_blank" rel="noopener noreferrer" className="artist-signature index-signature">smaxiso</a>
+      <div className="index-section">
+        <h2 className="index-section__title">🔥 Popular Tracks</h2>
+        <ul className="popular-tracks-list">
+          {popularTracks.map((song, i) => (
+            <li key={i} className="popular-tracks-list__item">
+              <span className="popular-tracks-list__num">{i + 1}</span>
+              {song.youtubeId && (
+                <img 
+                  src={`https://img.youtube.com/vi/${song.youtubeId}/default.jpg`} 
+                  alt="" 
+                  className="popular-tracks-list__thumb" 
+                />
+              )}
+              <div className="popular-tracks-list__meta">
+                <span className="popular-tracks-list__title">{song.title || `Track ${i + 1}`}</span>
+                <span className="popular-tracks-list__artist">{song.artist || topVibe.name}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
     </div>
   )
 }
