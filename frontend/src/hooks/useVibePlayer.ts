@@ -10,6 +10,13 @@ export function useVibePlayer(vibe: Vibe) {
   const [apiError, setApiError] = useState(false)
   const usePlaylistFallback = false
 
+  // Sync songs when vibe changes (for global player context)
+  useEffect(() => {
+    if (vibe.songs && vibe.songs.length > 0) {
+      setSongs(vibe.songs)
+    }
+  }, [vibe.slug])
+
   const reducer = useCallback(createPlayerReducer(), [])
   const [state, dispatch] = useReducer(reducer, initialPlayerState)
   const playerRef = useRef<YT.Player | null>(null)

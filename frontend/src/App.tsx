@@ -3,6 +3,8 @@ import { lazy, Suspense, useEffect } from 'react'
 import IndexPage from './pages/IndexPage'
 import InstallPrompt from './components/InstallPrompt'
 import { loadYouTubeAPI } from './utils/youtube'
+import { PlayerProvider } from './contexts/PlayerContext'
+import MiniPlayer from './components/MiniPlayer'
 
 const PlayerPage = lazy(() => import('./pages/PlayerPage'))
 
@@ -42,15 +44,18 @@ export default function App() {
   }, [])
 
   return (
-    <BrowserRouter>
-      <Suspense fallback={<div className="app-loader"><div className="spinner"></div></div>}>
-        <Routes>
-          <Route path="/" element={<IndexPage />} />
-          <Route path="/vibe/:slug" element={<PlayerPage />} />
-          <Route path="*" element={<IndexPage />} />
-        </Routes>
-      </Suspense>
-      <InstallPrompt />
-    </BrowserRouter>
+    <PlayerProvider>
+      <BrowserRouter>
+        <Suspense fallback={<div className="app-loader"><div className="spinner"></div></div>}>
+          <Routes>
+            <Route path="/" element={<IndexPage />} />
+            <Route path="/vibe/:slug" element={<PlayerPage />} />
+            <Route path="*" element={<IndexPage />} />
+          </Routes>
+        </Suspense>
+        <MiniPlayer />
+        <InstallPrompt />
+      </BrowserRouter>
+    </PlayerProvider>
   )
 }

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import vibes from '../data/vibes.json'
 import { Vibe } from '../types'
-import { useVibePlayer } from '../hooks/useVibePlayer'
+import { useGlobalPlayer } from '../contexts/PlayerContext'
 import PlayerBar from '../components/PlayerBar'
 import PlaylistDrawer from '../components/PlaylistDrawer'
 import { triggerHaptic } from '../utils/haptics'
@@ -31,7 +31,15 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { ShareIcon, VolumeIcon } from '../components/Icons'
 
 function PlayerPageInner({ vibe }: { vibe: Vibe }) {
-  const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = useVibePlayer(vibe)
+  const { loadVibe, playerHook } = useGlobalPlayer()
+  
+  useEffect(() => {
+    loadVibe(vibe)
+  }, [vibe.slug])
+
+  if (!playerHook) return <div className="player-page" style={{ '--accent': vibe.color } as React.CSSProperties}>Loading...</div>
+
+  const { state, dispatch, seekTo, next, prev, shuffle, playerRef, apiError, isLoading, getCurrentSong, songs } = playerHook
   const [volumeOpen, setVolumeOpen] = useState(false)
   const [ambientColor, setAmbientColor] = useState(vibe.color || '#00ffcc')
   const currentSong = getCurrentSong()
@@ -257,11 +265,6 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           )}
         </div>
       </div>
-
-
-
-      {/* YouTube hidden player (must be in viewport for iOS background playing) */}
-      <div id="yt-player" style={{ position: 'absolute', top: 0, left: 0, width: '1px', height: '1px', opacity: 0.01, pointerEvents: 'none', zIndex: -1 }} />
 
       {/* Subtle signature */}
       <a href="https://smaxiso.web.app" target="_blank" rel="noopener noreferrer" className="artist-signature">smaxiso</a>
