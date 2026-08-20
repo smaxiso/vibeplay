@@ -15,7 +15,14 @@ export default function IndexPage() {
         <header className="index-header">
           <div className="index-header__top">
             <div className="index-header__brand">
-              <span className="index-header__logo">🎵 VibePlay</span>
+              <span className="index-header__logo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)', marginRight: '6px' }}>
+                  <path d="M9 18V5l12-2v13"></path>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                VibePlay
+              </span>
             </div>
             <button className="index-header__action" aria-label="Search">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -25,7 +32,12 @@ export default function IndexPage() {
             </button>
           </div>
           <div className="index-header__greeting">
-            <h1 className="index-header__title">Good evening 👋</h1>
+            <h1 className="index-header__title">
+              Good evening
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px', color: '#a0c4ff', display: 'inline-block', verticalAlign: 'text-bottom' }}>
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </h1>
             <p className="index-header__subtitle">What's your vibe today?</p>
           </div>
         </header>

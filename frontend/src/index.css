@@ -151,6 +151,8 @@ body {
 }
 
 .index-header__logo {
+  display: flex;
+  align-items: center;
   font-size: 1.1rem;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
