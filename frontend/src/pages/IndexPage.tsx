@@ -13,9 +13,20 @@ export default function IndexPage() {
       
       <div className="app-container">
         <header className="index-header">
-          <div className="index-header__glass">
-            <h1 className="index-header__title">VibePlay</h1>
-            <p className="index-header__subtitle">Pick your vibe, play your music</p>
+          <div className="index-header__top">
+            <div className="index-header__brand">
+              <span className="index-header__logo">🎵 VibePlay</span>
+            </div>
+            <button className="index-header__action" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+          <div className="index-header__greeting">
+            <h1 className="index-header__title">Good evening 👋</h1>
+            <p className="index-header__subtitle">What's your vibe today?</p>
           </div>
         </header>
 

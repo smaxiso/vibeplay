@@ -138,47 +138,67 @@ body {
 
 .index-header {
   position: relative; z-index: 1;
-  text-align: center;
-  margin-bottom: 2.5rem;
+  text-align: left;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
-.index-header__glass {
-  display: inline-block;
-  padding: 1.5rem 3rem;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-  animation: float 4s ease-in-out infinite;
+.index-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.index-header__logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: -0.02em;
+}
+
+.index-header__action {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.index-header__action:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.index-header__action svg {
+  width: 20px;
+  height: 20px;
+}
+
+.index-header__greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .index-header__title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  background: linear-gradient(135deg, #fff 0%, #a0c4ff 50%, #fff 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: titleShine 6s linear infinite;
-}
-
-@keyframes titleShine {
-  0% { background-position: 200% center; }
-  100% { background-position: -200% center; }
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #fff;
+  line-height: 1.1;
 }
 
 .index-header__subtitle {
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 1.05rem;
+  font-weight: 500;
 }
 
 .vibe-grid {
@@ -1013,12 +1033,12 @@ body {
   .vibe-grid { grid-template-columns: 1fr; }
   .player-bar { padding: 0.75rem 1rem; }
   
-  /* Make header less bulky on mobile */
-  .index-page { padding: 1.5rem 0; }
-  .index-header { margin-bottom: 1rem; }
-  .index-header__glass { padding: 1.25rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
-  .index-header__title { font-size: 1.8rem; }
-  .index-header__subtitle { font-size: 0.9rem; }
+  /* Make header compact on mobile */
+  .index-page { padding: 0.5rem 0; }
+  .index-header { margin-bottom: 1.5rem; margin-top: 0.5rem; }
+  .index-header__top { margin-bottom: 1.5rem; }
+  .index-header__title { font-size: 1.75rem; }
+  .index-header__subtitle { font-size: 0.95rem; }
 }
 
 /* ─── Ambient Glow & Vignette ─── */
