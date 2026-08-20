@@ -127,6 +127,15 @@ body {
   100% { transform: scale(1.08); }
 }
 
+.app-container {
+  position: relative; z-index: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
 .index-header {
   position: relative; z-index: 1;
   text-align: center;
@@ -178,41 +187,13 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Horizontal Swimlanes on Mobile */
-@media (max-width: 768px) {
-  .vibe-grid {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: 1rem;
-    padding-bottom: 1.5rem;
-    -webkit-overflow-scrolling: touch;
-    margin-left: -1rem;
-    margin-right: -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  .vibe-grid::-webkit-scrollbar {
-    display: none;
-  }
-  .vibe-card {
-    flex: 0 0 80vw;
-    scroll-snap-align: start;
-    margin-right: 1rem;
-  }
 }
 
 /* ─── Popular Tracks Section ─── */
 .index-section {
   position: relative; z-index: 1;
-  width: 100%; max-width: 1200px;
+  width: 100%;
   margin: 2rem auto;
-  padding: 0 1rem;
 }
 
 .index-section__title {
@@ -1103,9 +1084,9 @@ body {
   .player-bar { padding: 0.75rem 1rem; }
   
   /* Make header less bulky on mobile */
-  .index-page { padding: 1.5rem 0.5rem; }
+  .index-page { padding: 1.5rem 0; }
   .index-header { margin-bottom: 1rem; }
-  .index-header__glass { padding: 0.75rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
+  .index-header__glass { padding: 1.25rem 1.5rem; border-radius: 16px; width: 100%; box-sizing: border-box; }
   .index-header__title { font-size: 1.8rem; }
   .index-header__subtitle { font-size: 0.9rem; }
 }

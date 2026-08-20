@@ -13,14 +13,16 @@ export default function IndexPage() {
         <source media="(max-width: 768px)" srcSet="/images/index-bg-mobile.jpg" />
         <img src="/images/index-bg-desktop.jpg" alt="" />
       </picture>
-      <header className="index-header">
-        <div className="index-header__glass">
-          <h1 className="index-header__title">VibePlay</h1>
-          <p className="index-header__subtitle">Pick your vibe, play your music</p>
-        </div>
-      </header>
+      
+      <div className="app-container">
+        <header className="index-header">
+          <div className="index-header__glass">
+            <h1 className="index-header__title">VibePlay</h1>
+            <p className="index-header__subtitle">Pick your vibe, play your music</p>
+          </div>
+        </header>
 
-      <div className="vibe-grid">
+        <div className="vibe-grid">
         {(vibes as Vibe[]).map((vibe, i) => (
           <VibeCard
             key={vibe.slug}
@@ -64,6 +66,7 @@ export default function IndexPage() {
         </ul>
       </div>
 
+      </div>
     </div>
   )
 }
