@@ -14,6 +14,7 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
   return (
     <Link 
       to={`/vibe/${slug}`} 
+      viewTransition
       className="vibe-card" 
       style={{ 
         '--accent': color,
@@ -27,6 +28,7 @@ export default function VibeCard({ slug, name, nameHindi, bgImage, color, songCo
         width={400}
         height={240}
         className="vibe-card__bg"
+        style={{ viewTransitionName: `vibe-cover-${slug}` } as React.CSSProperties}
         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
       />
       <div className="vibe-card__overlay">

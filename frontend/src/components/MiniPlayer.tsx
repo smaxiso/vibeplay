@@ -15,14 +15,15 @@ export default function MiniPlayer() {
 
   return (
     <div className="mini-player">
-      <Link to={`/vibe/${vibe.slug}`} className="mini-player__info">
-        {currentSong?.youtubeId && (
+      <Link to={`/vibe/${vibe.slug}`} viewTransition className="mini-player__info">
+        <div className="mini-player__art-wrapper">
           <img 
-            src={`https://img.youtube.com/vi/${currentSong.youtubeId}/default.jpg`}
+            src={vibe.bgImage} 
             alt="" 
-            className={`mini-player__thumb ${state.isPlaying ? 'spinning' : ''}`}
+            className="mini-player__art" 
+            style={{ viewTransitionName: `vibe-cover-${vibe.slug}` } as React.CSSProperties}
           />
-        )}
+        </div>
         <div className="mini-player__meta">
           <span className="mini-player__title">{currentSong?.title || 'Loading...'}</span>
           <span className="mini-player__artist">{currentSong?.artist || vibe.name}</span>

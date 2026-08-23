@@ -1053,6 +1053,7 @@ body {
   opacity: 0;
   mix-blend-mode: screen;
   transition: opacity 1s ease-in-out;
+  will-change: transform, filter, opacity;
 }
 
 .ambient-glow.is-playing {
@@ -1083,6 +1084,7 @@ body {
   background: radial-gradient(circle at center, rgba(255, 255, 255, 0.12) 0%, transparent 40%);
   animation: sweep-light 30s ease-in-out infinite alternate;
   mix-blend-mode: overlay;
+  will-change: transform;
 }
 
 @keyframes sweep-light {
@@ -1128,6 +1130,7 @@ body {
   animation-play-state: paused;
   flex-shrink: 0;
   transition: border-color 0.3s;
+  will-change: transform, border-color;
 }
 
 .spinning-disc.is-playing {
@@ -1470,5 +1473,56 @@ body {
 .mini-player__btn:active {
   transform: scale(0.95);
   background: rgba(255, 255, 255, 0.2);
+}
+
+
+/* ─── View Transitions ─── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: fade-out;
+}
+::view-transition-new(root) {
+  animation-name: fade-in;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ─── Offline Toast ─── */
+.offline-toast {
+  position: fixed;
+  top: env(safe-area-inset-top, 20px);
+  left: 50%;
+  transform: translate(-50%, -150%);
+  background: rgba(20, 20, 25, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.offline-toast.visible {
+  transform: translate(-50%, 20px);
 }
 

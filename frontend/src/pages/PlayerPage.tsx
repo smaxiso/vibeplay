@@ -160,6 +160,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
           src={vibe.bgImage}
           alt=""
           className="player-page__bg"
+          style={{ viewTransitionName: `vibe-cover-${vibe.slug}` } as React.CSSProperties}
           onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0' }}
         />
       </picture>
@@ -171,7 +172,7 @@ function PlayerPageInner({ vibe }: { vibe: Vibe }) {
 
       {/* Top bar */}
       <div className="player-page__topbar" style={{ alignItems: 'flex-start' }}>
-        <Link to="/" className="player-page__back" aria-label="Back to vibes">
+        <Link to="/" viewTransition className="player-page__back" aria-label="Back to vibes">
           <span className="back-arrow">←</span>
           <span className="back-text"> Vibes</span>
         </Link>

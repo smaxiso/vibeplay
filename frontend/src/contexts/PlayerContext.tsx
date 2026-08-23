@@ -22,13 +22,29 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const playerHook = useVibePlayerHook(activeVibe || dummyVibe)
   const [isPlayerActive, setIsPlayerActive] = useState(false)
 
-  // Force sync tracks when activeVibe changes
+  // Force sync tracks and update OS status bar theme color
   useEffect(() => {
     if (activeVibe) {
       setIsPlayerActive(true)
-      // The hook will see the new activeVibe.songs due to its own internal state,
-      // but we need to ensure the YouTube player loads the new playlist.
-      // This might require a small tweak in useVibePlayer.ts to react to vibe changes.
+      
+      // Update the notch/status bar color to match the vibe
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute("content", activeVibe.color || "#1a1a2e")
+      }
+    } else {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute("content", "#1a1a2e")
+      }
+    }
+    
+    // Cleanup when component unmounts
+    return () => {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute("content", "#1a1a2e")
+      }
     }
   }, [activeVibe])
 
