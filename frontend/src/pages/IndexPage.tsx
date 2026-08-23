@@ -1,10 +1,8 @@
-import { useState } from 'react'
 import vibes from '../data/vibes.json'
 import VibeCard from '../components/VibeCard'
 import { Vibe } from '../types'
 
 export default function IndexPage() {
-  const [showSearchToast, setShowSearchToast] = useState(false)
   const hour = new Date().getHours()
   let greeting = 'Good evening'
   let icon = (
@@ -38,11 +36,6 @@ export default function IndexPage() {
     )
   }
 
-  const handleSearchClick = () => {
-    setShowSearchToast(true)
-    setTimeout(() => setShowSearchToast(false), 3000)
-  }
-
   return (
     <div className="index-page">
       <picture className="index-page__bg">
@@ -63,12 +56,13 @@ export default function IndexPage() {
                 VibePlay
               </span>
             </div>
-            <button className="index-header__action" aria-label="Search" onClick={handleSearchClick}>
+            {/* Search is disabled for now until the global search feature is ready */}
+            {/* <button className="index-header__action" aria-label="Search" onClick={handleSearchClick}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-            </button>
+            </button> */}
           </div>
           <div className="index-header__greeting">
             <h1 className="index-header__title">
@@ -103,15 +97,6 @@ export default function IndexPage() {
             <span>More vibes dropping soon</span>
           </div>
         </div>
-        </div>
-
-        {/* Search Toast */}
-        <div className={`search-toast ${showSearchToast ? 'visible' : ''}`}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          Global search is coming soon!
         </div>
       </div>
     </div>
