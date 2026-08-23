@@ -1,9 +1,10 @@
-
+import { useState } from 'react'
 import vibes from '../data/vibes.json'
 import VibeCard from '../components/VibeCard'
 import { Vibe } from '../types'
 
 export default function IndexPage() {
+  const [showSearchToast, setShowSearchToast] = useState(false)
   const hour = new Date().getHours()
   let greeting = 'Good evening'
   let icon = (
@@ -37,6 +38,11 @@ export default function IndexPage() {
     )
   }
 
+  const handleSearchClick = () => {
+    setShowSearchToast(true)
+    setTimeout(() => setShowSearchToast(false), 3000)
+  }
+
   return (
     <div className="index-page">
       <picture className="index-page__bg">
@@ -57,7 +63,7 @@ export default function IndexPage() {
                 VibePlay
               </span>
             </div>
-            <button className="index-header__action" aria-label="Search" onClick={() => alert("Global search is coming in the next update! For now, explore the Vibes below.")}>
+            <button className="index-header__action" aria-label="Search" onClick={handleSearchClick}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -89,12 +95,25 @@ export default function IndexPage() {
         {/* Coming soon card */}
         <div className="vibe-card coming-soon-card" style={{ animationDelay: `${vibes.length * 0.1}s` }}>
           <div className="coming-soon-content">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <p>More Vibes<br/>Coming Soon</p>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+            <span>More vibes dropping soon</span>
           </div>
         </div>
+        </div>
+
+        {/* Search Toast */}
+        <div className={`search-toast ${showSearchToast ? 'visible' : ''}`}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          Global search is coming soon!
+        </div>
       </div>
-    </div>
     </div>
   )
 }
